@@ -1,4 +1,4 @@
-package com.aquagaslink.OrderManagement;
+package com.aquagaslink.order_management;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
