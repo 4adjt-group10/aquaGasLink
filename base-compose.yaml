@@ -1,0 +1,15 @@
+services:
+
+  order-db:
+    extends:
+      file: ./OrderManagement/compose.yaml
+      service: order-db
+
+  order-app:
+    extends:
+      file: ./OrderManagement/compose.yaml
+      service: order-app
+
+networks:
+  order-network:
+    name: order-network
