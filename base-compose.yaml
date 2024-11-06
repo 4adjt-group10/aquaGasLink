@@ -32,12 +32,10 @@ services:
       file: ./Product/compose.yaml
       service: product-app
 
-
-
 networks:
   product-network:
     name: product-network
+  order-network:
+    name: order-network
   rabbitmq_go_net:
     driver: bridge
-  order-network:
-    name: network
