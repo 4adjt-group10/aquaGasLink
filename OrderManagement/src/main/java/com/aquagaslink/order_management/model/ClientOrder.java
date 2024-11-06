@@ -12,22 +12,23 @@ public class ClientOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private String number;
+    private String code;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
     private String productCode;
     private String clientName;
     private UUID clientId;
 
-    public ClientOrder(String number,
+    public ClientOrder(String code,
                        LocalDateTime createdAt,
                        LocalDateTime updatedAt,
                        OrderStatus status,
                        String productCode,
                        String clientName,
                        UUID clientId) {
-        this.number = number;
+        this.code = code;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.status = status;
@@ -37,9 +38,9 @@ public class ClientOrder {
     }
 
     public ClientOrder(OrderFormDto formDto) {
-        this(formDto.number(),
-                formDto.createdAt(),
-                formDto.updatedAt(),
+        this(formDto.code(),
+                LocalDateTime.now(),
+                null,
                 formDto.status(),
                 formDto.productCode(),
                 formDto.clientName(),
@@ -55,8 +56,8 @@ public class ClientOrder {
         return id;
     }
 
-    public String getNumber() {
-        return number;
+    public String getCode() {
+        return code;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -84,12 +85,15 @@ public class ClientOrder {
     }
 
     public void merge(OrderFormDto formDto) {
-        this.number = formDto.number();
-        this.createdAt = formDto.createdAt();
-        this.updatedAt = formDto.updatedAt();
+        this.code = formDto.code();
+        this.updatedAt = LocalDateTime.now();
         this.status = formDto.status();
         this.productCode = formDto.productCode();
         this.clientName = formDto.clientName();
         this.clientId = formDto.clientId();
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 }
