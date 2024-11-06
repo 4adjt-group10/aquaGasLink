@@ -17,7 +17,8 @@ import java.util.UUID;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
-@RestController("/order")
+@RestController
+@RequestMapping("/order")
 public class OrderController {
 
     private static final String PAGEABLE_DESCRIPTION = """
