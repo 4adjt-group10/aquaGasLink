@@ -38,7 +38,7 @@ public class OrderExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<StandardError> handleIllegalState(IllegalArgumentException ex, HttpServletRequest request) {
+    public ResponseEntity<StandardError> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
         StandardError error = new StandardError(Instant.now(),
                 BAD_REQUEST.value(),
                 "Illegal Argument",
