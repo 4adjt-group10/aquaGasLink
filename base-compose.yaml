@@ -1,5 +1,17 @@
 services:
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - rabbitmq_go_net
+
   order-db:
     extends:
       file: ./OrderManagement/compose.yaml
@@ -10,6 +22,22 @@ services:
       file: ./OrderManagement/compose.yaml
       service: order-app
 
+  product-db:
+    extends:
+      file: ./Product/compose.yaml
+      service: product-db
+
+  product-app:
+    extends:
+      file: ./Product/compose.yaml
+      service: product-app
+
+
+
 networks:
+  product-network:
+    name: product-network
+  rabbitmq_go_net:
+    driver: bridge
   order-network:
-    name: order-network
+    name: network
