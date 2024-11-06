@@ -5,6 +5,7 @@ import com.aquagaslink.order_management.controller.dto.OrderFormDto;
 import com.aquagaslink.order_management.model.OrderStatus;
 import com.aquagaslink.order_management.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -45,13 +46,13 @@ public class OrderController {
 
     @PostMapping("/create")
     @Operation(summary = "Create order")
-    public ResponseEntity<OrderDto> createOrder(@RequestBody OrderFormDto formDto) {
+    public ResponseEntity<OrderDto> createOrder(@RequestBody @Valid OrderFormDto formDto) {
         return ResponseEntity.ok(orderService.createOrder(formDto));
     }
 
     @PutMapping("/update/{id}")
     @Operation(summary = "Update order")
-    public ResponseEntity<OrderDto> updateOrder(@PathVariable UUID id, @RequestBody OrderFormDto formDto) {
+    public ResponseEntity<OrderDto> updateOrder(@PathVariable UUID id, @RequestBody @Valid OrderFormDto formDto) {
         return ResponseEntity.ok(orderService.updateOrder(id, formDto));
     }
 
