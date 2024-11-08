@@ -4,6 +4,7 @@ import com.aquagaslink.product.controller.dto.ProductCadasterDto;
 import com.aquagaslink.product.controller.dto.ProductFormDto;
 import com.aquagaslink.product.infrastructure.ProductRepository;
 import com.aquagaslink.product.model.ProductModel;
+import io.micrometer.common.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,9 +55,9 @@ public class ProductService {
     private ProductModel findByIdOrNameOrProductCode(ProductFormDto productFormDto) {
 
         Optional<ProductModel> product;
-        if(Objects.nonNull(productFormDto.id())){
+        if(Objects.nonNull(productFormDto.id()) && productFormDto.id() > 0){
             product = productRepository.findById(productFormDto.id());
-        }else if(Objects.nonNull(productFormDto.name())) {
+        }else if(StringUtils.isNotEmpty(productFormDto.name())) {
             product = productRepository.findByName(productFormDto.name());
         }else {
             product = productRepository.findByProductCode(productFormDto.productCode());
@@ -92,5 +93,12 @@ public class ProductService {
                 productModel.getDescription(),
                 productModel.getPrice(),
                 productModel.getStock());
+    }
+
+    public List<ProductCadasterDto> findAll() {
+        List<ProductCadasterDto> productCadasterDtos = new ArrayList<>();
+        var produtos = productRepository.findAll();
+        produtos.forEach(p -> productCadasterDtos.add(generateDtoOut(p)));
+        return productCadasterDtos;
     }
 }

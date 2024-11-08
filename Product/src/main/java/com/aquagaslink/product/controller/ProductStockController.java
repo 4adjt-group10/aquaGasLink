@@ -24,8 +24,24 @@ public class ProductStockController {
         return productService.registerProducts(productFormDto);
     }
 
-    @GetMapping("/find/{id}")
-    public ProductCadasterDto registerProducts(@PathVariable("id") Long id){
+    @GetMapping("/find/id/{id}")
+    public ProductCadasterDto findById(@PathVariable("id") Long id){
         return productService.findById(id);
     }
+
+    @GetMapping("/find/name/{name}")
+    public ProductCadasterDto findByName(@PathVariable("name") String name){
+        return productService.findByName(name);
+    }
+
+    @GetMapping("/find/product/{productcode}")
+    public ProductCadasterDto findByProductCode(@PathVariable("productcode") String productcode){
+        return productService.findByProductCode(productcode);
+    }
+
+    @GetMapping("/find/all")
+    public List<ProductCadasterDto> findAll(){
+        return productService.findAll();
+    }
+
 }
