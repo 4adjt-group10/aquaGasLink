@@ -1,43 +1,67 @@
 package com.aquagaslink.product.batch;
 
+import com.aquagaslink.product.controller.dto.ProductFormDto;
 import com.aquagaslink.product.infrastructure.ProductRepository;
 import com.aquagaslink.product.model.ProductModel;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.data.RepositoryItemWriter;
-import org.springframework.batch.item.data.builder.RepositoryItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
+import org.springframework.batch.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
-@EnableBatchProcessing
 public class BatchConfig {
 
     @Autowired
-    ProductRepository productRepository;
+    private PlatformTransactionManager transactionManager;
+    @Autowired
+    private JobRepository jobRepository;
+    @Autowired
+    private ProductRepository customerRepository;
 
     @Bean
     public FlatFileItemReader<ProductModel> reader() {
-        return new FlatFileItemReaderBuilder<ProductModel>()
-                .name("productItemReader")
-                .resource(new FileSystemResource("product.csv"))
-                .delimited()
-                .names(new String[]{"name", "productCode", "description","price","stock"})
-                .fieldSetMapper(new BeanWrapperFieldSetMapper<ProductModel>() {{
-                    setTargetType(ProductModel.class);
-                }})
-                .build();
+        FlatFileItemReader<ProductModel> itemReader = new FlatFileItemReader<>();
+        itemReader.setResource(new FileSystemResource("product.csv"));
+        itemReader.setName("csvReader");
+        itemReader.setLinesToSkip(1);   // skip the first line (header line)
+        itemReader.setSkippedLinesCallback(new LineValidator());
+        itemReader.setLineMapper(lineMapper());
+        return itemReader;
+    }
+
+    // How to read the csv file, and how to map the data from the csv file to the Customer object.
+    private LineMapper<ProductModel> lineMapper() {
+        DefaultLineMapper<ProductModel> lineMapper = new DefaultLineMapper<>();
+
+        // lineTokenizer will extract the data from the csv file.
+        DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
+        lineTokenizer.setDelimiter(DelimitedLineTokenizer.DELIMITER_COMMA);
+        lineTokenizer.setStrict(false);
+        lineTokenizer.setNames("description","name","price","productCode","stock");
+
+        //will map the extracted value by the lineTokenizer to the target class which is Customer.
+        BeanWrapperFieldSetMapper<ProductModel> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
+        fieldSetMapper.setTargetType(ProductModel.class);
+
+        // both objects from previous step need to provide to the line mapper.
+        lineMapper.setLineTokenizer(lineTokenizer);
+        lineMapper.setFieldSetMapper(fieldSetMapper);
+        return lineMapper;
     }
 
     @Bean
@@ -47,33 +71,43 @@ public class BatchConfig {
 
     @Bean
     public RepositoryItemWriter<ProductModel> writer() {
-        return new RepositoryItemWriterBuilder<ProductModel>()
-                .repository(productRepository)
-                .methodName("save") .build();
+        RepositoryItemWriter<ProductModel> writer = new RepositoryItemWriter<>();
+        // here we're telling our CustomerRepository to use customerRepository.save method
+        // to write the information or the csv data to the Database.
+        writer.setRepository(customerRepository);
+        writer.setMethodName("save");
+        return writer;
     }
 
     @Bean
-    public Job importProductJob(JobRepository jobRepository, Step step1) {
-        return new JobBuilder("importProductJob", jobRepository)
-                .incrementer(new RunIdIncrementer())
-                .flow(step1)
+    public Step step1() {
+        return new StepBuilder("csv-step", jobRepository)
+                .<ProductModel, ProductModel>chunk(10, transactionManager)
+                .reader(reader())
+                .processor((ItemProcessor<? super ProductModel, ? extends ProductModel>) processor())
+                .writer(writer())
+                .faultTolerant()
+                //.skipLimit(5)  // skip up to 5 rows mistakes
+                //.skip(NumberFormatException.class)  // if you find any NumberFormatException just skip that row rather than roll back it (restore (a database) to a previously defined state) and process further rows.
+                //.noSkip(IllegalArgumentException.class)
+                .taskExecutor(taskExecutor())
+                .build();
+    }
+
+    @Bean
+    public Job runJob() {
+        return new JobBuilder("importCustomers", jobRepository)
+                .flow(step1())
                 .end()
                 .build();
     }
 
     @Bean
-    public Step step1(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager, FlatFileItemReader<ProductModel> reader,
-                      ProductItemProcessor processor, RepositoryItemWriter<ProductModel> writer) {
-        return new StepBuilder("step1",jobRepository)
-                .<ProductModel, ProductModel>chunk(10,platformTransactionManager)
-                .reader(reader)
-                .processor(processor)
-                .writer(writer)
-                .build();
+    public TaskExecutor taskExecutor() {
+        SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
+        asyncTaskExecutor.setConcurrencyLimit(10);
+        return asyncTaskExecutor;
     }
 
-    @Bean
-    public JobCompletionNotificationListener listener() {
-        return new JobCompletionNotificationListener();
-    }
+
 }

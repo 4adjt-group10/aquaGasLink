@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController @RequestMapping("/batch")
 public class BatchController {
     @Autowired private JobLauncher jobLauncher;
-    @Autowired private Job importProductJob;
+    @Autowired private Job Job;
 
     @GetMapping("/start") public String startBatch() {
         try {
             jobLauncher
-                    .run(importProductJob, new JobParametersBuilder()
+                    .run(Job, new JobParametersBuilder()
                             .addLong("startAt", System.currentTimeMillis())
                             .toJobParameters());
             return "Batch process started!";

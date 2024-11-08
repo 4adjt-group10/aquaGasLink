@@ -101,4 +101,8 @@ public class ProductService {
         produtos.forEach(p -> productCadasterDtos.add(generateDtoOut(p)));
         return productCadasterDtos;
     }
+
+    public void deleteById(Long id) {
+        productRepository.deleteById(id);
+    }
 }
