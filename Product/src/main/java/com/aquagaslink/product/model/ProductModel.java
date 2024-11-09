@@ -1,6 +1,9 @@
 package com.aquagaslink.product.model;
 
+import com.aquagaslink.product.controller.dto.ProductFormDto;
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 
 @Entity
 public class ProductModel {
@@ -10,13 +13,13 @@ public class ProductModel {
     private String productCode;
     private String name;
     private String description;
-    private double price;
+    private BigDecimal price;
     private int stock;
 
     public ProductModel() {
     }
 
-    public ProductModel(Long id, String name, String description, double price, int stock, String productCode) {
+    public ProductModel(Long id, String name, String description, BigDecimal price, int stock, String productCode) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -25,7 +28,8 @@ public class ProductModel {
         this.productCode = productCode;
     }
 
-    public ProductModel(String name, String description, double price, int stock, String productCode) {
+    public ProductModel(Long id, String description, String name, BigDecimal price, String productCode, int stock) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
@@ -33,6 +37,21 @@ public class ProductModel {
         this.productCode = productCode;
     }
 
+    public ProductModel(ProductFormDto productFormDto) {
+        this.name = productFormDto.name();
+        this.description = productFormDto.description();
+        this.price = productFormDto.price();
+        this.stock = productFormDto.stock();
+        this.productCode = productFormDto.productCode();
+    }
+
+    public ProductModel(String name, String description, BigDecimal price, int stock, String productCode) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stock = stock;
+        this.productCode = productCode;
+    }
     public Long getId() {
         return id;
     }
@@ -45,7 +64,7 @@ public class ProductModel {
         return description;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
@@ -53,7 +72,7 @@ public class ProductModel {
         return stock;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -63,5 +82,21 @@ public class ProductModel {
 
     public String getProductCode() {
         return productCode;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
