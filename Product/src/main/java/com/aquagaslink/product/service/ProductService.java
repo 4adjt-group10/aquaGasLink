@@ -5,6 +5,7 @@ import com.aquagaslink.product.controller.dto.ProductFormDto;
 import com.aquagaslink.product.infrastructure.ProductRepository;
 import com.aquagaslink.product.model.ProductModel;
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 @Service
 public class ProductService {
-
+    private static final String PRODUCT_NOT_FOUND = "Product not found";
     final ProductRepository productRepository;
 
     public ProductService(ProductRepository productRepository) {
@@ -23,17 +24,17 @@ public class ProductService {
     }
 
 
-    public ProductCadasterDto registerProduct (ProductFormDto productFormDto){
+    public ProductCadasterDto registerProduct(ProductFormDto productFormDto) {
 
-        var product  = findByIdOrNameOrProductCode(productFormDto);
+        var product = findByIdOrNameOrProductCode(productFormDto);
 
-        if(Objects.isNull(product)){
+        if (Objects.isNull(product)) {
 
             product = createProduct(productFormDto);
 
-        }else{
+        } else {
 
-            product = updateProduct(productFormDto,product);
+            product = updateProduct(productFormDto, product);
         }
         return generateDtoOut(product);
     }
@@ -46,11 +47,7 @@ public class ProductService {
     }
 
     private ProductModel createProduct(ProductFormDto productFormDto) {
-        ProductModel product = new ProductModel(productFormDto.name(),
-                productFormDto.description()
-                , productFormDto.price(),
-                productFormDto.stock(),
-                productFormDto.productCode());
+        ProductModel product = new ProductModel(productFormDto.name(), productFormDto.description(), productFormDto.price(), productFormDto.stock(), productFormDto.productCode());
         product = productRepository.save(product);
         return product;
     }
@@ -58,11 +55,11 @@ public class ProductService {
     private ProductModel findByIdOrNameOrProductCode(ProductFormDto productFormDto) {
 
         Optional<ProductModel> product;
-        if(Objects.nonNull(productFormDto.id()) && productFormDto.id() > 0){
+        if (Objects.nonNull(productFormDto.id()) && productFormDto.id() > 0) {
             product = productRepository.findById(productFormDto.id());
-        }else if(StringUtils.isNotEmpty(productFormDto.name())) {
+        } else if (StringUtils.isNotEmpty(productFormDto.name())) {
             product = productRepository.findByName(productFormDto.name());
-        }else {
+        } else {
             product = productRepository.findByProductCode(productFormDto.productCode());
         }
         return product.orElse(null);
@@ -70,33 +67,27 @@ public class ProductService {
 
     public List<ProductCadasterDto> registerProducts(List<ProductFormDto> productFormDto) {
         List<ProductCadasterDto> products = new ArrayList<>();
-        productFormDto.forEach(product ->
-                products.add(registerProduct(product)));
+        productFormDto.forEach(product -> products.add(registerProduct(product)));
         return products;
     }
 
     public ProductCadasterDto findById(Long id) {
         var product = productRepository.findById(id);
-        return product.map(ProductService::generateDtoOut).orElse(null);
+        return product.map(ProductService::generateDtoOut).orElseThrow(() -> new EntityNotFoundException(PRODUCT_NOT_FOUND));
     }
 
     public ProductCadasterDto findByName(String name) {
         var product = productRepository.findByName(name);
-        return product.map(ProductService::generateDtoOut).orElse(null);
+        return product.map(ProductService::generateDtoOut).orElseThrow(() -> new EntityNotFoundException(PRODUCT_NOT_FOUND));
     }
 
     public ProductCadasterDto findByProductCode(String productCode) {
         var product = productRepository.findByProductCode(productCode);
-        return product.map(ProductService::generateDtoOut).orElse(null);
+        return product.map(ProductService::generateDtoOut).orElseThrow(() -> new EntityNotFoundException(PRODUCT_NOT_FOUND));
     }
 
     private static @NotNull ProductCadasterDto generateDtoOut(ProductModel productModel) {
-        return new ProductCadasterDto(productModel.getId(),
-                productModel.getName(),
-                productModel.getDescription(),
-                productModel.getPrice(),
-                productModel.getStock(),
-                productModel.getProductCode());
+        return new ProductCadasterDto(productModel.getId(), productModel.getName(), productModel.getDescription(), productModel.getPrice(), productModel.getStock(), productModel.getProductCode());
     }
 
     public List<ProductCadasterDto> findAll() {
