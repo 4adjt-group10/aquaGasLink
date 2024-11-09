@@ -2,18 +2,21 @@ package com.aquagaslink.product.queue.producer;
 
 import com.aquagaslink.product.queue.config.RabbitConfig;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class MessageProducer {
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
+
+    private final RabbitTemplate rabbitTemplate;
+
+    public MessageProducer(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     public void send(String message) {
-        rabbitTemplate.convertAndSend(RabbitConfig.exchangeName, "routing.key.test", message);
+        rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGENAME, "routing.key.test", message);
     }
 }
 

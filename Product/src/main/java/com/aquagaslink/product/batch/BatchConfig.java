@@ -1,6 +1,5 @@
 package com.aquagaslink.product.batch;
 
-import com.aquagaslink.product.controller.dto.ProductFormDto;
 import com.aquagaslink.product.infrastructure.ProductRepository;
 import com.aquagaslink.product.model.ProductModel;
 import org.springframework.batch.core.Job;
@@ -8,14 +7,12 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
@@ -26,12 +23,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 public class BatchConfig {
 
-    @Autowired
-    private PlatformTransactionManager transactionManager;
-    @Autowired
-    private JobRepository jobRepository;
-    @Autowired
-    private ProductRepository customerRepository;
+
+    private final PlatformTransactionManager transactionManager;
+
+    private final JobRepository jobRepository;
+
+    private final ProductRepository customerRepository;
+
+    public BatchConfig(PlatformTransactionManager transactionManager, JobRepository jobRepository, ProductRepository customerRepository) {
+        this.transactionManager = transactionManager;
+        this.jobRepository = jobRepository;
+        this.customerRepository = customerRepository;
+    }
 
     @Bean
     public FlatFileItemReader<ProductModel> reader() {
@@ -66,7 +69,7 @@ public class BatchConfig {
 
     @Bean
     public ProductItemProcessor processor() {
-        return new ProductItemProcessor();
+        return new ProductItemProcessor(customerRepository);
     }
 
     @Bean
@@ -84,7 +87,7 @@ public class BatchConfig {
         return new StepBuilder("csv-step", jobRepository)
                 .<ProductModel, ProductModel>chunk(10, transactionManager)
                 .reader(reader())
-                .processor((ItemProcessor<? super ProductModel, ? extends ProductModel>) processor())
+                .processor(processor())
                 .writer(writer())
                 .faultTolerant()
                 //.skipLimit(5)  // skip up to 5 rows mistakes

@@ -6,7 +6,6 @@ import com.aquagaslink.product.infrastructure.ProductRepository;
 import com.aquagaslink.product.model.ProductModel;
 import io.micrometer.common.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,8 +15,12 @@ import java.util.Optional;
 
 @Service
 public class ProductService {
-    @Autowired
-    ProductRepository productRepository;
+
+    final ProductRepository productRepository;
+
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
 
 
     public ProductCadasterDto registerProduct (ProductFormDto productFormDto){
@@ -92,7 +95,8 @@ public class ProductService {
                 productModel.getName(),
                 productModel.getDescription(),
                 productModel.getPrice(),
-                productModel.getStock());
+                productModel.getStock(),
+                productModel.getProductCode());
     }
 
     public List<ProductCadasterDto> findAll() {

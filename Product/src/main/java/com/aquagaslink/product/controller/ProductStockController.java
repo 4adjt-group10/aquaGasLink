@@ -4,7 +4,6 @@ import com.aquagaslink.product.controller.dto.ProductCadasterDto;
 import com.aquagaslink.product.controller.dto.ProductFormDto;
 import com.aquagaslink.product.queue.producer.MessageProducer;
 import com.aquagaslink.product.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,11 +11,16 @@ import java.util.List;
 @RestController
 @RequestMapping("/product")
 public class ProductStockController {
-    @Autowired
-    ProductService productService;
 
-    @Autowired
-    private MessageProducer messageProducer;
+    final ProductService productService;
+
+
+    final MessageProducer messageProducer;
+
+    public ProductStockController(ProductService productService, MessageProducer messageProducer) {
+        this.productService = productService;
+        this.messageProducer = messageProducer;
+    }
 
     @PostMapping("/register")
     public ProductCadasterDto registerProduct(@RequestBody ProductFormDto productFormDto) {
