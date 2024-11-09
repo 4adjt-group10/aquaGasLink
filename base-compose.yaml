@@ -41,6 +41,8 @@ services:
       file: ./Product/compose.yaml
       service: product-app
 
+
+
 networks:
   product-network:
     name: product-network
