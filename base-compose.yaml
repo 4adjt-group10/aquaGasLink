@@ -46,7 +46,7 @@ services:
 networks:
   product-network:
     name: product-network
-  rabbitmq_go_net:
-    name: rabbitmq_go_net
   order-network:
     name: order-network
+  rabbitmq_go_net:
+    name: rabbitmq_go_net
