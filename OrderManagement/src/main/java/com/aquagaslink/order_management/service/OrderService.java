@@ -5,6 +5,7 @@ import com.aquagaslink.order_management.controller.dto.OrderFormDto;
 import com.aquagaslink.order_management.infrastructure.ClientOrderRepository;
 import com.aquagaslink.order_management.model.ClientOrder;
 import com.aquagaslink.order_management.model.OrderStatus;
+import com.aquagaslink.order_management.queue.producer.MessageProducer;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,9 +19,11 @@ public class OrderService {
     private static final String ORDER_NOT_FOUND = "Order not found";
 
     private final ClientOrderRepository clientOrderRepository;
+    private final MessageProducer messageProducer;
 
-    public OrderService(ClientOrderRepository clientOrderRepository) {
+    public OrderService(ClientOrderRepository clientOrderRepository, MessageProducer messageProducer) {
         this.clientOrderRepository = clientOrderRepository;
+        this.messageProducer = messageProducer;
     }
 
     public OrderDto createOrder(OrderFormDto formDto) {
@@ -46,5 +49,13 @@ public class OrderService {
         ClientOrder clientOrder = clientOrderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND));
         clientOrder.setStatus(status);
         return new OrderDto(clientOrderRepository.save(clientOrder));
+    }
+
+    public void sendProduct(String message) {
+        messageProducer.sendProduct(message);
+    }
+
+    public void sendDelivery(String message) {
+        messageProducer.sendDelivery(message);
     }
 }

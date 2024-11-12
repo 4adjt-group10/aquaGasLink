@@ -62,4 +62,12 @@ public class OrderController {
     public ResponseEntity<OrderDto> updateOrderStatus(@PathVariable UUID id, @RequestParam OrderStatus status) {
         return ResponseEntity.ok(orderService.updateOrderStatus(id, status));
     }
+
+    @PostMapping("/send-product")
+    @Operation(summary = "Send product message to queue")
+    public ResponseEntity<Void> sendProductMessage(@RequestBody String message) {
+        orderService.sendProduct(message);
+        orderService.sendDelivery(message);
+        return ResponseEntity.ok().build();
+    }
 }
