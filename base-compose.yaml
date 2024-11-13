@@ -1,4 +1,11 @@
+version: '3.8'
+
 services:
+  net-creator:
+    image: busybox
+    command: ["sh", "-c", "docker network create rabbitmq_go_net || true"]
+    networks:
+      - rabbitmq_go_net
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -9,6 +16,8 @@ services:
     volumes:
       - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
       - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    depends_on:
+      - net-creator
     networks:
       - rabbitmq_go_net
 
@@ -42,6 +51,7 @@ services:
       file: ./Client/compose.yaml
       service: client-app
 
+
 networks:
   product-network:
     name: product-network
@@ -50,4 +60,4 @@ networks:
   client-network:
     name: client-network
   rabbitmq_go_net:
-    driver: bridge
+    name: rabbitmq_go_net

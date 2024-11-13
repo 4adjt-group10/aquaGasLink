@@ -1,5 +1,6 @@
-services:
+version: '3.8'
 
+services:
   product-db:
     container_name: postgres-product
     image: postgres:latest
@@ -21,10 +22,12 @@ services:
     image: maven:3.8.4-openjdk-17
     volumes:
       - ./:/app
+      - ./products.csv:/app/products.csv
     working_dir: /app
-    command: bash -c "mvn clean install && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar target/Product.jar"
+    command: bash -c "mvn clean install && cp target/Product.jar /app/Product.jar && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar /app/Product.jar"
     environment:
       - TZ=America/Sao_Paulo
+      - SPRING_RABBITMQ_HOST=rabbitmq  # Aqui estamos utilizando o nome do contêiner RabbitMQ
     ports:
       - "8081:8080"
       - "5006:5005"
@@ -36,7 +39,6 @@ services:
 
 networks:
   rabbitmq_go_net:
-    driver: bridge
     external: true
   product-network:
     name: product-network
