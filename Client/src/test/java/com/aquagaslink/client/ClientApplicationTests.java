@@ -1,13 +1,13 @@
-package com.aquagaslink.OrderManagement;
+package com.aquagaslink.client;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class OrderManagementApplicationTests {
+class ClientApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }

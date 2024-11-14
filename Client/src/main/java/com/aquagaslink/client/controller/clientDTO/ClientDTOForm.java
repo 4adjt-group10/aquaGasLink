@@ -2,8 +2,6 @@ package com.aquagaslink.client.controller.clientDTO;
 
 import com.aquagaslink.client.model.ClientModel;
 
-import java.util.UUID;
-
 public record ClientDTOForm(
         String cpf,
         String name,

@@ -22,7 +22,7 @@ public class ClientService {
         if (client.isPresent()) {
             throw new RuntimeException("Client already exists");
         }
-        
+
         var clientModel = clientRepository.save(new ClientModel(clientDTOForm));
         return new ClientDTO(clientModel);
     }
