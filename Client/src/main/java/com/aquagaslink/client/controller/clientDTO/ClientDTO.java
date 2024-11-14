@@ -1,6 +1,5 @@
 package com.aquagaslink.client.controller.clientDTO;
 
-import ch.qos.logback.core.net.server.Client;
 import com.aquagaslink.client.model.ClientModel;
 
 import java.util.UUID;
