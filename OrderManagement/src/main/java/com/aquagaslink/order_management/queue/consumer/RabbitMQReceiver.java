@@ -2,7 +2,6 @@ package com.aquagaslink.order_management.queue.consumer;
 
 import com.aquagaslink.order_management.queue.config.RabbitConfig;
 import com.rabbitmq.client.Channel;
-import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
@@ -34,7 +33,6 @@ public class RabbitMQReceiver {
             logger.log(Level.SEVERE, "Error processing message: ".concat(e.getMessage()), e);
             // Se o processamento falhar, rejeite a mensagem sem reencaminhá-la para a fila
             channel.basicNack(deliveryTag, false, false);
-            throw new AmqpRejectAndDontRequeueException("Falha no processamento da mensagem", e);
         }
     }
 
