@@ -16,8 +16,14 @@ public class ClientOrderHelper {
         return new ClientOrder(code, LocalDateTime.now(),LocalDateTime.now(),OrderStatus.CREATED,"code","nome",UUID.randomUUID());
     }
 
+
     public static OrderFormDto createOrderFormDto(String code){
         return new OrderFormDto(code, OrderStatus.CREATED,"code","nome",UUID.randomUUID());
+
+    }
+
+    public static OrderFormDto createOrderFormDto(){
+        return new OrderFormDto("code",OrderStatus.CANCELLED,"code","nome",UUID.randomUUID());
 
     }
 
