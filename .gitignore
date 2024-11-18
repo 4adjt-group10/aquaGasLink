@@ -6,3 +6,13 @@
 
 ### Database ###
 /data/**
+/Client/data/**
+/OrderManagement/data/**
+/Product/data/**
+/Delivery/data/**
+
+### target ###
+/Client/target/**
+/OrderManagement/target/**
+/Product/target/**
+/Delivery/target/**
