@@ -40,14 +40,11 @@ public class ClientOrderRepositoryTest {
         var id ="order";
         var order = helper.createClientOrder(id);
         when(clientOrderRepository.save(any(ClientOrder.class))).thenReturn(order);
-        //Act
         var orderSaved = clientOrderRepository.save(order);
-        //validation
         assertThat(orderSaved)
                 .isNotNull()
                 .isEqualTo(order);
 
-        //verifica que o repository foi chamado ao menos 1 vez para salvar algo
         verify(clientOrderRepository, times(1)).save(any(ClientOrder.class));
 
     }

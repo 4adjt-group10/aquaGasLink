@@ -67,7 +67,6 @@ public class OrderServiceTest {
 
         var orderRead = service.createOrder(order);
 
-        //System.out.println(productRead.productCode());
         assertThat(orderRead.clientName()).isEqualTo(order.clientName());
         assertThat(orderRead.productCode()).isEqualTo(order.productCode());
         assertThat(orderRead.status()).isEqualTo(order.status());
@@ -86,7 +85,6 @@ public class OrderServiceTest {
 
         var orderRead = service.getOrderById(orderId);
 
-        //System.out.println(productRead.productCode());
         assertThat(orderRead.id()).isEqualTo(existingOrder.getId());
         assertThat(orderRead.code()).isEqualTo(existingOrder.getCode());
         assertThat(orderRead.status()).isEqualTo(existingOrder.getStatus());
@@ -135,7 +133,6 @@ public class OrderServiceTest {
 
     @Test
     public void testListOrdersByClientId() {
-        // Given
         UUID clientId = UUID.randomUUID();
         Pageable pageable = PageRequest.of(0, 10);
         var order1 = helper.createClientOrderIdClient(clientId);
@@ -143,11 +140,9 @@ public class OrderServiceTest {
 
         Page<ClientOrder> page = new PageImpl<>(Arrays.asList(order1, order2), pageable, 20);
 
-        // When
         when(clientOrderRepository.findAllByClientId(clientId, pageable)).thenReturn(page);
         Page<OrderDto> result = service.listOrdersByClientId(clientId, pageable);
 
-        // Then
         verify(clientOrderRepository).findAllByClientId(clientId, pageable);
         System.out.println(result.get().toList());
         Assertions.assertEquals(2, result.getNumberOfElements());
@@ -158,8 +153,7 @@ public class OrderServiceTest {
     @Test
     public void testConstructor() {
         Assertions.assertNotNull(service);
-        //Assertions.assertNotNull(service.);
-        //Assertions.assertNotNull(service.messageProducer);
+
     }
 
 }
