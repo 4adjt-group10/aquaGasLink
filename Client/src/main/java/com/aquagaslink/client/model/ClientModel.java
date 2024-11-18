@@ -1,10 +1,7 @@
 package com.aquagaslink.client.model;
 
-import com.aquagaslink.client.controller.clientDTO.ClientDTO;
 import com.aquagaslink.client.controller.clientDTO.ClientDTOForm;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.UUID;
 
@@ -12,7 +9,8 @@ import java.util.UUID;
 public class ClientModel {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
     private String cpf;
     private String name;

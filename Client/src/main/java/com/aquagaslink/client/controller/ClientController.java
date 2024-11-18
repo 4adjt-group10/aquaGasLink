@@ -1,8 +1,9 @@
 package com.aquagaslink.client.controller;
 
-import com.aquagaslink.client.controller.clientDTO.ClientDTOForm;
-import com.aquagaslink.client.service.ClientService;
 import com.aquagaslink.client.controller.clientDTO.ClientDTO;
+import com.aquagaslink.client.controller.clientDTO.ClientDTOForm;
+import com.aquagaslink.client.queue.producer.MessageProducer;
+import com.aquagaslink.client.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public class ClientController {
 
     @Autowired
     private ClientService clientService;
+
+    @Autowired
+    MessageProducer messageProducer;
 
     @PostMapping
     public ResponseEntity<ClientDTO> createClient(@RequestBody ClientDTOForm clientDTOForm) {
@@ -46,5 +50,12 @@ public class ClientController {
     public ResponseEntity<Void> deleteClient(@PathVariable UUID id) {
         clientService.deleteClient(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/teste")
+    public void teste() {
+        for (int i = 0; i < 10; i++) {
+            messageProducer.send("Message teste " + i + " numero randomico :" + Math.random());
+        }
     }
 }
