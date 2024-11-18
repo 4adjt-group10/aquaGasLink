@@ -52,7 +52,6 @@ public class ProductServiceTest {
 
         var productRead = service.findById(id);
 
-        //System.out.println(productRead.productCode());
         assertThat(productRead.id()).isEqualTo(product.getId());
         assertThat(productRead.name()).isEqualTo(product.getName());
         assertThat(productRead.description()).isEqualTo(product.getDescription());
@@ -73,7 +72,6 @@ public class ProductServiceTest {
 
         var productRead = service.findByName(name);
 
-        //System.out.println(productRead.name());
         assertThat(productRead.id()).isEqualTo(product.getId());
         assertThat(productRead.name()).isEqualTo(product.getName());
         assertThat(productRead.description()).isEqualTo(product.getDescription());
@@ -94,7 +92,6 @@ public class ProductServiceTest {
 
         var productRead = service.findByProductCode(code);
 
-        //System.out.println(productRead.name());
         assertThat(productRead.id()).isEqualTo(product.getId());
         assertThat(productRead.name()).isEqualTo(product.getName());
         assertThat(productRead.description()).isEqualTo(product.getDescription());
@@ -108,7 +105,6 @@ public class ProductServiceTest {
     void shouldDeleteProductById(){
         Long id = new Random().nextLong();
 
-        //Define comportamento quando for chamado esse método com o UUID
         doNothing().when(productRepository).delete(any(ProductModel.class));
 
         service.deleteById(id);
@@ -121,7 +117,6 @@ public class ProductServiceTest {
     void shouldCreateProduct(){
         Long id = new Random().nextLong();
         var productModel = helper.createProductModel(id);
-        var productResponse = helper.createProductCadasterDto(id);
         var product = helper.createProductDto(id);
         when(productRepository.save(any(ProductModel.class)))
                 .thenReturn(productModel);

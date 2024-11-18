@@ -50,7 +50,6 @@ public class ProductRepositoryTest {
                 .isNotNull()
                 .isEqualTo(product);
 
-        //verifica que o repository foi chamado ao menos 1 vez para salvar algo
         verify(productRepository, times(1)).save(any(ProductModel.class));
 
     }
@@ -60,7 +59,6 @@ public class ProductRepositoryTest {
         Long id = new Random().nextLong();
         var product = helper.createProductModel(id);
 
-        //Define comportamento quando for chamado esse método com o UUID
         doNothing().when(productRepository).delete(any(ProductModel.class));
 
         productRepository.delete(product);

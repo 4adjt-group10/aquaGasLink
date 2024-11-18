@@ -44,20 +44,16 @@ public class ProductExceptionHandlerTest {
 
     @Test
     public void testHandleEntityNotFound() {
-        // Mock exception
         EntityNotFoundException ex = new EntityNotFoundException("Entity not found");
 
-        // Mock request URI
         when(request.getRequestURI()).thenReturn("/product");
 
-        // Expected response
         StandardError expectedError = new StandardError(Instant.now(),
                 HttpStatus.NOT_FOUND.value(),
                 "Entity not found",
                 ex.getMessage(),
                 "/product");
 
-        // Call the method and assert response
         ResponseEntity<StandardError> response = handler.handleEntityNotFound(ex, request);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -74,16 +70,14 @@ public class ProductExceptionHandlerTest {
 
         when(request.getRequestURI()).thenReturn("/product");
 
-        // Execute method under test
         ResponseEntity<StandardError> response = handler.handleIllegalState(exMock, request);
 
-        // Assertions
         Assert.assertNotNull(response);
         assertEquals(BAD_REQUEST.value(), response.getStatusCodeValue());
 
         StandardError error = response.getBody();
         Assert.assertNotNull(error);
-        Assert.assertEquals(Instant.now().toEpochMilli(), error.getTimestamp().toEpochMilli(), 1000); // Allow for slight time difference
+        Assert.assertEquals(Instant.now().toEpochMilli(), error.getTimestamp().toEpochMilli(), 1000);
         Assert.assertEquals(Optional.of(BAD_REQUEST.value()), Optional.of(error.getStatus()));
         Assert.assertEquals("Illegal state", error.getError());
         Assert.assertEquals("Test exception", error.getMessage());
@@ -97,16 +91,14 @@ public class ProductExceptionHandlerTest {
 
         when(request.getRequestURI()).thenReturn("/product");
 
-        // Execute method under test
         ResponseEntity<StandardError> response = handler.handleIllegalArgument(exMock, request);
 
-        // Assertions
         Assert.assertNotNull(response);
         assertEquals(BAD_REQUEST.value(), response.getStatusCodeValue());
 
         StandardError error = response.getBody();
         Assert.assertNotNull(error);
-        Assert.assertEquals(Instant.now().toEpochMilli(), error.getTimestamp().toEpochMilli(), 1000); // Allow for slight time difference
+        Assert.assertEquals(Instant.now().toEpochMilli(), error.getTimestamp().toEpochMilli(), 1000);
         Assert.assertEquals(Optional.of(BAD_REQUEST.value()), Optional.of(error.getStatus()));
         Assert.assertEquals("Illegal Argument", error.getError());
         Assert.assertEquals("Invalid argument", error.getMessage());
