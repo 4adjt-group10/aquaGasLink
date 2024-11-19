@@ -34,6 +34,11 @@ services:
       file: ./Product/compose.yaml
       service: product-db
 
+  delivery-db:
+    extends:
+      file: ./Delivery/compose.yaml
+      service: delivery-db
+
   product-app:
     extends:
       file: ./Product/compose.yaml
@@ -49,6 +54,11 @@ services:
       file: ./Client/compose.yaml
       service: client-app
 
+  delivery-app:
+    extends:
+      file: ./Delivery/compose.yaml
+      service: delivery-app
+
 
 networks:
   product-network:
@@ -57,5 +67,7 @@ networks:
     name: order-network
   client-network:
     name: client-network
+  delivery-network:
+    name: delivery-network
   rabbitmq_go_net:
     name: rabbitmq_go_net
