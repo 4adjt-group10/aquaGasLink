@@ -7,6 +7,7 @@ import com.aquagaslink.delivery.model.Address;
 import com.aquagaslink.delivery.model.Delivery;
 import com.aquagaslink.delivery.model.DeliveryClient;
 import com.aquagaslink.delivery.model.DeliveryStatus;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -43,10 +44,10 @@ public class DeliveryService {
     }
 
     public RoutOutput driving(String orderId, DriverLocationForm driverLocationForm) {
-        if (Objects.nonNull(driverLocationForm.address())) {
-            return routeByAddress(driverLocationForm.address(), orderId);
-        } else {
+        if (StringUtils.isNotEmpty(driverLocationForm.Latitude())&& StringUtils.isNotEmpty(driverLocationForm.Longitude())) {
             return routeByLatAndLong(driverLocationForm, orderId);
+        } else {
+            return routeByAddress(driverLocationForm.address(), orderId);
         }
     }
 
