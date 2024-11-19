@@ -23,42 +23,57 @@ services:
     extends:
       file: ./OrderManagement/compose.yaml
       service: order-db
+    depends_on:
+      - net-creator
 
   order-app:
     extends:
       file: ./OrderManagement/compose.yaml
       service: order-app
+    depends_on:
+      - net-creator
 
   product-db:
     extends:
       file: ./Product/compose.yaml
       service: product-db
+    depends_on:
+      - net-creator
 
-  delivery-db:
-    extends:
-      file: ./Delivery/compose.yaml
-      service: delivery-db
 
   product-app:
     extends:
       file: ./Product/compose.yaml
       service: product-app
+    depends_on:
+      - net-creator
 
   client-db:
     extends:
       file: ./Client/compose.yaml
       service: client-db
+    depends_on:
+      - net-creator
 
   client-app:
     extends:
       file: ./Client/compose.yaml
       service: client-app
 
+
+  delivery-db:
+    extends:
+      file: ./Delivery/compose.yaml
+      service: delivery-db
+    depends_on:
+      - net-creator
+
   delivery-app:
     extends:
       file: ./Delivery/compose.yaml
       service: delivery-app
-
+    depends_on:
+      - net-creator
 
 networks:
   product-network:
