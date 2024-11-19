@@ -5,4 +5,10 @@
 *.ipr
 
 ### Database ###
-/data/**
+/**/data/**
+
+### target ###
+/**/target/**
+
+### jar file ###
+/Product/Product.jar
