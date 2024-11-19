@@ -5,14 +5,10 @@
 *.ipr
 
 ### Database ###
-/data/**
-/Client/data/**
-/OrderManagement/data/**
-/Product/data/**
-/Delivery/data/**
+/**/data/**
 
 ### target ###
-/Client/target/**
-/OrderManagement/target/**
-/Product/target/**
-/Delivery/target/**
+/**/target/**
+
+### jar file ###
+/Product/Product.jar
