@@ -1,5 +1,6 @@
 package com.aquagaslink.delivery.model;
 
+import com.aquagaslink.delivery.controller.dto.DeliveryPersonForm;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -27,6 +28,12 @@ public class DeliveryPerson {
         this.phone = phone;
         this.status = status;
         this.vehiclePlate = vehiclePlate;
+    }
+
+    public DeliveryPerson(DeliveryPersonForm deliveryPersonForm) {
+        this.name = deliveryPersonForm.name();
+        this.email = deliveryPersonForm.email();
+        this.phone = deliveryPersonForm.phone();
     }
 
     public UUID getId() {

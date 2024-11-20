@@ -54,7 +54,7 @@ public class Delivery {
         this.observation = observation;
     }
 
-    public Delivery( UUID orderId, DeliveryClient deliveryClient, DeliveryStatus status) {
+    public Delivery(UUID orderId, DeliveryClient deliveryClient, DeliveryStatus status) {
         this.orderId = orderId;
         this.deliveryClient = deliveryClient;
         this.status = status;
