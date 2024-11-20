@@ -1,5 +1,6 @@
 package com.aquagaslink.product.batch;
 
+import com.aquagaslink.product.BlankLineRecordSeparatorPolicy;
 import com.aquagaslink.product.infrastructure.ProductRepository;
 import com.aquagaslink.product.model.ProductModel;
 import org.springframework.batch.core.Job;
@@ -44,6 +45,8 @@ public class BatchConfig {
         itemReader.setLinesToSkip(1);   // skip the first line (header line)
         itemReader.setSkippedLinesCallback(new LineValidator());
         itemReader.setLineMapper(lineMapper());
+        itemReader.setRecordSeparatorPolicy(new BlankLineRecordSeparatorPolicy());
+
         return itemReader;
     }
 
