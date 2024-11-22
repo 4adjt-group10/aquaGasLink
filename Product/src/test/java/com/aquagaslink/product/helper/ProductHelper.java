@@ -25,6 +25,10 @@ public class ProductHelper {
         return new ProductFormDto(id,"produto","descrição",new BigDecimal("10"),10,"code");
     }
 
+    public static ProductFormDto createProductDtoWith(String name, String code){
+        return new ProductFormDto(null,name,"descrição",new BigDecimal("10"),10,code);
+    }
+
     public static ProductCadasterDto createProductCadasterDto(Long id){
         return new ProductCadasterDto(id,"produto","descrição",new BigDecimal("10"),10,"code");
     }
