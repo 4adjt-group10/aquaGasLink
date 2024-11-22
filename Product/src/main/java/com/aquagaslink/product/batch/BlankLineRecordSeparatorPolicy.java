@@ -1,4 +1,4 @@
-package com.aquagaslink.product;
+package com.aquagaslink.product.batch;
 
 import org.springframework.batch.item.file.separator.SimpleRecordSeparatorPolicy;
 

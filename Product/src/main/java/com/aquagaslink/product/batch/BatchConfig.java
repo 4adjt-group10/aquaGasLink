@@ -1,6 +1,5 @@
 package com.aquagaslink.product.batch;
 
-import com.aquagaslink.product.BlankLineRecordSeparatorPolicy;
 import com.aquagaslink.product.infrastructure.ProductRepository;
 import com.aquagaslink.product.model.ProductModel;
 import org.springframework.batch.core.Job;
