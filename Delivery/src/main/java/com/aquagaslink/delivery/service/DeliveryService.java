@@ -26,7 +26,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -43,7 +42,7 @@ public class DeliveryService {
         this.deliveryRepository = deliveryRepository;
     }
 
-    public RoutOutput driving(String orderId, DriverLocationForm driverLocationForm) {
+    public RoutOutput tracking(String orderId, DriverLocationForm driverLocationForm) {
         if (StringUtils.isNotEmpty(driverLocationForm.Latitude())&& StringUtils.isNotEmpty(driverLocationForm.Longitude())) {
             return routeByLatAndLong(driverLocationForm, orderId);
         } else {
@@ -53,6 +52,8 @@ public class DeliveryService {
 
     private RoutOutput routeByLatAndLong(DriverLocationForm driverLocationForm, String orderId) {
         var delivery = getDelivery(orderId);
+        delivery.setLatitude(driverLocationForm.Latitude());
+        delivery.setLongitude(driverLocationForm.Longitude());
         var address = delivery.getDeliveryClient().getAddress();
         String destination = generateLocationByAddress(address);
         String origin = driverLocationForm.Latitude().concat(",").concat(driverLocationForm.Longitude());

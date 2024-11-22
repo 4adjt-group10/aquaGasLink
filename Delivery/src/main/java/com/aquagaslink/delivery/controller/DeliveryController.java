@@ -15,9 +15,9 @@ public class DeliveryController {
         this.deliveryService = deliveryService;
     }
 
-    @PostMapping("/driving/{orderId}")
-    public RoutOutput driving(@PathVariable String orderId, @RequestBody DriverLocationForm driverLocationForm) {
-        return deliveryService.driving(orderId, driverLocationForm);
+    @PostMapping("/tracking/{orderId}")
+    public RoutOutput tracking(@PathVariable String orderId, @RequestBody DriverLocationForm driverLocationForm) {
+        return deliveryService.tracking(orderId, driverLocationForm);
     }
 
     @GetMapping("/teste")
