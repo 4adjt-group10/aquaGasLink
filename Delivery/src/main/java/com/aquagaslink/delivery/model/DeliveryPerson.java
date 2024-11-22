@@ -59,4 +59,10 @@ public class DeliveryPerson {
     public String getVehiclePlate() {
         return vehiclePlate;
     }
+
+    public void merge(DeliveryPersonForm form) {
+        this.name = form.name();
+        this.email = form.email();
+        this.phone = form.phone();
+    }
 }

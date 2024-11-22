@@ -52,6 +52,8 @@ public class DeliveryService {
 
     private RoutOutput routeByLatAndLong(DriverLocationForm driverLocationForm, String orderId) {
         var delivery = getDelivery(orderId);
+        delivery.setLatitude(driverLocationForm.Latitude());
+        delivery.setLongitude(driverLocationForm.Longitude());
         var address = delivery.getDeliveryClient().getAddress();
         String destination = generateLocationByAddress(address);
         String origin = driverLocationForm.Latitude().concat(",").concat(driverLocationForm.Longitude());
