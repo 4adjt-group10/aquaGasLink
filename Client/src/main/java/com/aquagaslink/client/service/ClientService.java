@@ -4,6 +4,7 @@ import com.aquagaslink.client.controller.clientDTO.ClientDTO;
 import com.aquagaslink.client.controller.clientDTO.ClientDTOForm;
 import com.aquagaslink.client.infrastructure.ClientRepository;
 import com.aquagaslink.client.model.ClientModel;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class ClientService {
     public ClientDTO createClient(ClientDTOForm clientDTOForm) {
         var client = clientRepository.findByCpf(clientDTOForm.cpf());
         if (client.isPresent()) {
-            throw new RuntimeException("Client already exists");
+            throw new EntityNotFoundException("Client already exists");
         }
 
         var clientModel = clientRepository.save(new ClientModel(clientDTOForm));
@@ -39,7 +40,7 @@ public class ClientService {
     public ClientDTO updateClient(UUID id, ClientDTOForm clientDTOForm) {
     var client = clientRepository.findById(id);
     if (client.isEmpty()) {
-        throw new RuntimeException("Client not found");
+        throw new EntityNotFoundException("Client not found");
     }
     var clientModel = client.get();
     clientModel.updateFromDTO(clientDTOForm);
@@ -51,7 +52,7 @@ public class ClientService {
     public void deleteClient(UUID id) {
         var client = clientRepository.findById(id);
         if (client.isEmpty()) {
-            throw new RuntimeException("Client not found");
+            throw new EntityNotFoundException("Client not found");
         }
         clientRepository.delete(client.get());
 
