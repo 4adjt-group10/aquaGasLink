@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 public class ProductProperties {
     private String appProductChannel = "productEventListener-out-0";
     private String appClientChannel = "clientEventListener-out-0";
+    private String appOrderChannel = "orderEventListener-out-0";
 
     public ProductProperties() {
     }
@@ -29,5 +30,13 @@ public class ProductProperties {
 
     public void setAppClientChannel(String appClientChannel) {
         this.appClientChannel = appClientChannel;
+    }
+
+    public String getAppOrderChannel() {
+        return appOrderChannel;
+    }
+
+    public void setAppOrderChannel(String appOrderChannel) {
+        this.appOrderChannel = appOrderChannel;
     }
 }
