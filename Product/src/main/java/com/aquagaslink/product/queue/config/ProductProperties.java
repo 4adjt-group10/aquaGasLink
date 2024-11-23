@@ -4,8 +4,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ProductProperties {
-    private String appProductChannel = "product-out-0";
-    private String appClientChannel = "client-out-0";
+    private String appProductChannel = "productEventListener-out-0";
+    private String appClientChannel = "clientEventListener-out-0";
 
     public ProductProperties() {
     }

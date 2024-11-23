@@ -4,14 +4,17 @@ import com.aquagaslink.product.controller.dto.ProductCadasterDto;
 import com.aquagaslink.product.controller.dto.ProductFormDto;
 import com.aquagaslink.product.queue.ProductEventGateway;
 import com.aquagaslink.product.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.EventListener;
 import java.util.List;
 
 @RestController
 @RequestMapping("/product")
 public class ProductStockController {
+
 
     final ProductService productService;
     final ProductEventGateway productEventGateway;

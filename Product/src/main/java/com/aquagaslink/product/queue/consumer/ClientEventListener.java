@@ -5,9 +5,9 @@ import org.springframework.stereotype.Component;
 import java.util.function.Consumer;
 
 @Component
-public class ProductEventListener implements Consumer<String> {
+public class ClientEventListener implements Consumer<String> {
     @Override
     public void accept(String s) {
-        System.out.println("product:" + s);
+        System.out.println("Cliente:" + s);
     }
 }
