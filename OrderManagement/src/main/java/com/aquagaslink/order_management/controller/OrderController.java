@@ -66,8 +66,6 @@ public class OrderController {
     @PostMapping("/send-product")
     @Operation(summary = "Send product message to queue")
     public ResponseEntity<Void> sendProductMessage(@RequestBody String message) {
-        orderService.sendProduct(message);
-        orderService.sendDelivery(message);
         return ResponseEntity.ok().build();
     }
 }
