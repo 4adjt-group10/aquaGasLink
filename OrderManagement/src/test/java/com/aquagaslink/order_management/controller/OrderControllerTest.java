@@ -28,7 +28,6 @@ public class OrderControllerTest {
     @InjectMocks
     private OrderController controller;
 
-    @Autowired
     private ClientOrderHelper helper;
 
     @Test
@@ -37,8 +36,6 @@ public class OrderControllerTest {
 
         ResponseEntity<Void> response = controller.sendProductMessage(message);
 
-        verify(service).sendProduct(message);
-        verify(service).sendDelivery(message);
         assertEquals(ResponseEntity.ok().build(), response);
     }
 

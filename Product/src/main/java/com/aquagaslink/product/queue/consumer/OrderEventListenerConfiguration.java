@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 @Configuration
-public class ProductEventListenerConfiguration {
+public class OrderEventListenerConfiguration {
 
     @Bean
-    public Consumer<Message<String>> productEventListener() {
+    public Consumer<Message<String>> orderToProductEventListener() {
         return message -> {
             String payload = message.getPayload();
-            System.out.println("Produto: " + payload);
+            System.out.println("order recebido: " + payload);
 
             // Processamento da mensagem do produto
             // Confirme a mensagem manualmente se necessário

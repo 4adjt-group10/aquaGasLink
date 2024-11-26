@@ -4,24 +4,25 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ProductProperties {
-    private String appProductChannel = "productEventListener-out-0";
-    private String appClientChannel = "clientEventListener-out-0";
-    private String appOrderChannel = "orderEventListener-out-0";
+    private String appOrderChannel = "productToOrderEventListener-out-0";
+    private String appClientChannel = "productToClientEventListener-out-0";
+    private String appDeliveryChannel = "productToDeliveryEventListener-out-0";
 
     public ProductProperties() {
     }
 
-    public ProductProperties(String appProductChannel, String appClientChannel) {
-        this.appProductChannel = appProductChannel;
+    public ProductProperties(String appOrderChannel, String appClientChannel, String appDeliveryChannel) {
+        this.appOrderChannel = appOrderChannel;
         this.appClientChannel = appClientChannel;
+        this.appDeliveryChannel = appDeliveryChannel;
     }
 
-    public String getAppProductChannel() {
-        return appProductChannel;
+    public String getAppOrderChannel() {
+        return appOrderChannel;
     }
 
-    public void setAppProductChannel(String appProductChannel) {
-        this.appProductChannel = appProductChannel;
+    public void setAppOrderChannel(String appOrderChannel) {
+        this.appOrderChannel = appOrderChannel;
     }
 
     public String getAppClientChannel() {
@@ -32,11 +33,11 @@ public class ProductProperties {
         this.appClientChannel = appClientChannel;
     }
 
-    public String getAppOrderChannel() {
-        return appOrderChannel;
+    public String getAppDeliveryChannel() {
+        return appDeliveryChannel;
     }
 
-    public void setAppOrderChannel(String appOrderChannel) {
-        this.appOrderChannel = appOrderChannel;
+    public void setAppDeliveryChannel(String appDeliveryChannel) {
+        this.appDeliveryChannel = appDeliveryChannel;
     }
 }

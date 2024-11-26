@@ -16,7 +16,7 @@ public class ProductEventListenerConfig {
     public Consumer<Message<String>> productToOrderEventListener() {
         return message -> {
             String payload = message.getPayload();
-            System.out.println("Produto: " + payload);
+            System.out.println("Produto recebido: " + payload);
 
             // Processamento da mensagem do produto
             // Confirme a mensagem manualmente se necessário

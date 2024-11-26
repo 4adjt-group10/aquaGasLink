@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 public class ClientEventListenerConfig {
 
     @Bean
-    public Consumer<Message<String>> clientEventListener() {
+    public Consumer<Message<String>> clientToProductEventListener() {
         return message -> {
             String payload = message.getPayload();
             System.out.println("Cliente: " + payload);

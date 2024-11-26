@@ -73,8 +73,6 @@ public class ProductStockController {
     public String sendMessageToProductQueue(@RequestParam String message) {
         for (int i = 0; i < 10; i++) {
             productEventGateway.sendProductEvent("Message teste " + i + " numero randomico :" + Math.random());
-            productEventGateway.sendClientEvent("Message teste " + i + " numero randomico :" + Math.random());
-            productEventGateway.sendOrderEvent("Message teste " + i + " numero randomico :" + Math.random());
         }
 
         return "Mensagem enviada para a fila de produtos: " + message;

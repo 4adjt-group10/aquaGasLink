@@ -3,9 +3,11 @@ package com.aquagaslink.order_management.controller;
 import com.aquagaslink.order_management.controller.dto.OrderDto;
 import com.aquagaslink.order_management.controller.dto.OrderFormDto;
 import com.aquagaslink.order_management.model.OrderStatus;
+import com.aquagaslink.order_management.queue.OrderEventGateway;
 import com.aquagaslink.order_management.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -20,6 +22,9 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @RestController
 @RequestMapping("/order")
 public class OrderController {
+
+    @Autowired
+    OrderEventGateway orderEventGateway;
 
     private static final String PAGEABLE_DESCRIPTION = """
         Accepts sorting parameters passing them in the URL, such as '?page=2&size=5&sort=createdAt,desc'
@@ -67,5 +72,14 @@ public class OrderController {
     @Operation(summary = "Send product message to queue")
     public ResponseEntity<Void> sendProductMessage(@RequestBody String message) {
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/send")
+    public String sendMessageToProductQueue(@RequestParam String message) {
+        for (int i = 0; i < 10; i++) {
+            orderEventGateway.sendProductEvent("Message teste " + i + " numero randomico :" + Math.random());
+        }
+
+        return "Mensagem enviada para a fila de produtos: " + message;
     }
 }

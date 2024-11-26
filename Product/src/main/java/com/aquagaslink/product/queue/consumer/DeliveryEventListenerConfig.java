@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 @Configuration
-public class OrderEventListenerConfig {
+public class DeliveryEventListenerConfig {
 
     @Bean
-    public Consumer<Message<String>> orderEventListener() {
+    public Consumer<Message<String>> deliveryToProductEventListener() {
         return message -> {
             String payload = message.getPayload();
             System.out.println("order: " + payload);

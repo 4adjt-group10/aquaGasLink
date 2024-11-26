@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 public class DeliveryEventListenerConfig {
 
     @Bean
-    public Consumer<Message<String>> deliveryEventListener() {
+    public Consumer<Message<String>> deliveryToOrderEventListener() {
         return message -> {
             String payload = message.getPayload();
             System.out.println("delivery: " + payload);

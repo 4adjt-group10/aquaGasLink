@@ -20,18 +20,18 @@ public class OrderEventGatewayWithStreamBridge implements OrderEventGateway {
     @Override
     public void sendProductEvent(String message) {
         streamBridge.send(queueProperties.getAppProductChannel(),message);
-        System.out.println("Sent product event: " + message);
+        System.out.println("Sent to product event: " + message);
     }
 
     @Override
     public void sendClientEvent(String message) {
-        streamBridge.send(queueProperties.getAppClientChannel(),message);
-        System.out.println("Sent product event: " + message);
+//        streamBridge.send(queueProperties.getAppClientChannel(),message);
+//        System.out.println("Sent product event: " + message);
     }
 
     @Override
     public void sendDeliveryEvent(String message) {
-        streamBridge.send(queueProperties.getAppDeliveryChannel(),message);
-        System.out.println("Sent product event: " + message);
+//        streamBridge.send(queueProperties.getAppDeliveryChannel(),message);
+//        System.out.println("Sent product event: " + message);
     }
 }
