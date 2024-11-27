@@ -7,7 +7,6 @@ import com.aquagaslink.order_management.queue.OrderEventGateway;
 import com.aquagaslink.order_management.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -23,17 +22,17 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @RequestMapping("/order")
 public class OrderController {
 
-    @Autowired
-    OrderEventGateway orderEventGateway;
 
     private static final String PAGEABLE_DESCRIPTION = """
         Accepts sorting parameters passing them in the URL, such as '?page=2&size=5&sort=createdAt,desc'
          to fetch the third page (page count starts at 0), with 5 records per page, sorted by createdAt in descending order.
     """;
 
+    private final OrderEventGateway orderEventGateway;
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderEventGateway orderEventGateway, OrderService orderService) {
+        this.orderEventGateway = orderEventGateway;
         this.orderService = orderService;
     }
 
@@ -68,18 +67,21 @@ public class OrderController {
         return ResponseEntity.ok(orderService.updateOrderStatus(id, status));
     }
 
-    @PostMapping("/send-product")
-    @Operation(summary = "Send product message to queue")
-    public ResponseEntity<Void> sendProductMessage(@RequestBody String message) {
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/send")
+    @PostMapping("/send-product-message")
     public String sendMessageToProductQueue(@RequestParam String message) {
         for (int i = 0; i < 10; i++) {
             orderEventGateway.sendProductEvent("Message teste " + i + " numero randomico :" + Math.random());
         }
 
         return "Mensagem enviada para a fila de produtos: " + message;
+    }
+
+    @PostMapping("/send-delivery-message")
+    public String sendMessageToDeliveryQueue(@RequestParam String message) {
+        for (int i = 0; i < 10; i++) {
+            orderEventGateway.sendDeliveryEvent("Message teste " + i + " numero randomico :" + Math.random());
+        }
+
+        return "Mensagem enviada para a fila de delivery: " + message;
     }
 }

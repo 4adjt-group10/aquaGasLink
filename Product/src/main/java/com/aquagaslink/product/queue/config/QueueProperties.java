@@ -3,15 +3,17 @@ package com.aquagaslink.product.queue.config;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProductProperties {
+public class QueueProperties {
+
     private String appOrderChannel = "productToOrderEventListener-out-0";
     private String appClientChannel = "productToClientEventListener-out-0";
     private String appDeliveryChannel = "productToDeliveryEventListener-out-0";
 
-    public ProductProperties() {
+    @Deprecated(since = "Only for framework")
+    public QueueProperties() {
     }
 
-    public ProductProperties(String appOrderChannel, String appClientChannel, String appDeliveryChannel) {
+    public QueueProperties(String appOrderChannel, String appClientChannel, String appDeliveryChannel) {
         this.appOrderChannel = appOrderChannel;
         this.appClientChannel = appClientChannel;
         this.appDeliveryChannel = appDeliveryChannel;
