@@ -23,11 +23,6 @@ public class DeliveryController {
         return deliveryService.driving(orderId, driverLocationForm);
     }
 
-    @GetMapping("/teste")
-    public void teste(){
-        deliveryService.teste();
-    }
-
     @PostMapping("/send-order-message")
     public String sendMessageToOrderQueue(@RequestParam String message) {
         for (int i = 0; i < 10; i++) {

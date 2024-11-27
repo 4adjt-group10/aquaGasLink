@@ -40,7 +40,6 @@ services:
     depends_on:
       - net-creator
 
-
   product-app:
     extends:
       file: ./Product/compose.yaml
@@ -59,7 +58,6 @@ services:
     extends:
       file: ./Client/compose.yaml
       service: client-app
-
 
   delivery-db:
     extends:
