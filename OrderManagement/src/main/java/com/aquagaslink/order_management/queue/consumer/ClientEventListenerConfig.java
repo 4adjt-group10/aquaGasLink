@@ -1,5 +1,6 @@
 package com.aquagaslink.order_management.queue.consumer;
 
+import com.aquagaslink.order_management.queue.dto.ClientToOrderIn;
 import com.rabbitmq.client.Channel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,9 +14,9 @@ import java.util.function.Consumer;
 public class ClientEventListenerConfig {
 
     @Bean
-    public Consumer<Message<String>> clientToOrderEventListener() {
+    public Consumer<Message<ClientToOrderIn>> clientToOrderEventListener() {
         return message -> {
-            String payload = message.getPayload();
+            ClientToOrderIn payload = message.getPayload();
             System.out.println("Cliente: " + payload);
 
             // Processamento da mensagem do produto
