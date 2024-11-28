@@ -1,7 +1,9 @@
 package com.aquagaslink.product.queue;
 
+import com.aquagaslink.product.queue.dto.ProductOut;
+
 public interface ProductEventGateway {
-    void sendProductEvent(String message);
-    void sendClientEvent(String message);
-    void sendOrderEvent(String message);
+    void sendProductEvent(ProductOut message);
+    void sendClientEvent(ProductOut message);
+    void sendOrderEvent(ProductOut message);
 }

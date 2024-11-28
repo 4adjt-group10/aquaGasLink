@@ -1,12 +1,17 @@
 package com.aquagaslink.product.queue.producer;
 
+import com.aquagaslink.product.batch.JobCompletionNotificationListener;
 import com.aquagaslink.product.queue.ProductEventGateway;
 import com.aquagaslink.product.queue.config.QueueProperties;
+import com.aquagaslink.product.queue.dto.ProductOut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ProductEventgatewayWithStreamBridge implements ProductEventGateway {
+    private static final Logger logger = LoggerFactory.getLogger(ProductEventgatewayWithStreamBridge.class);
 
     private final  StreamBridge streamBridge;
 
@@ -19,20 +24,20 @@ public class ProductEventgatewayWithStreamBridge implements ProductEventGateway 
 
 
     @Override
-    public void sendProductEvent(String message) {
+    public void sendProductEvent(ProductOut message) {
         streamBridge.send(queueProperties.getAppOrderChannel(),message);
-        System.out.println("Sent to order event: " + message);
+        logger.info("Sent to order event: " + message);
     }
 
     @Override
-    public void sendClientEvent(String message) {
+    public void sendClientEvent(ProductOut message) {
         streamBridge.send(queueProperties.getAppClientChannel(),message);
-        System.out.println("Sent product event: " + message);
+        logger.info("Sent product event: " + message);
     }
 
     @Override
-    public void sendOrderEvent(String message) {
+    public void sendOrderEvent(ProductOut message) {
         streamBridge.send(queueProperties.getAppOrderChannel(),message);
-        System.out.println("Sent product event: " + message);
+        logger.info("Sent product event: " + message);
     }
 }
