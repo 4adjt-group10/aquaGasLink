@@ -8,15 +8,17 @@ import org.springframework.messaging.MessageHeaders;
 
 import java.io.IOException;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 @Configuration
 public class ProductEventListenerConfig {
+    Logger logger = Logger.getLogger(ProductEventListenerConfig.class.getName());
 
     @Bean
     public Consumer<Message<String>> productToOrderEventListener() {
         return message -> {
             String payload = message.getPayload();
-            System.out.println("Produto recebido: " + payload);
+            logger.info("Produto recebido: " + payload);
 
             // Processamento da mensagem do produto
             // Confirme a mensagem manualmente se necessário

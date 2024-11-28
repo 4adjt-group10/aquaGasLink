@@ -8,15 +8,17 @@ import com.rabbitmq.client.Channel;
 
 import java.io.IOException;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 @Configuration
 public class OrderEventListenerConfiguration {
+    Logger logger = Logger.getLogger(OrderEventListenerConfiguration.class.getName());
 
     @Bean
     public Consumer<Message<String>> orderToProductEventListener() {
         return message -> {
             String payload = message.getPayload();
-            System.out.println("order recebido: " + payload);
+            logger.info("order recebido: " + payload);
 
             // Processamento da mensagem do produto
             // Confirme a mensagem manualmente se necessário

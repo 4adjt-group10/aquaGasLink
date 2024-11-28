@@ -7,15 +7,17 @@ import com.rabbitmq.client.Channel;
 
 import java.io.IOException;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 @Configuration
 public class ClientEventListenerConfig {
+    Logger logger = Logger.getLogger(ClientEventListenerConfig.class.getName());
 
     @Bean
     public Consumer<Message<String>> clientToProductEventListener() {
         return message -> {
             String payload = message.getPayload();
-            System.out.println("Cliente: " + payload);
+            logger.info("Cliente: " + payload);
 
             // Processamento da mensagem do produto
             // Confirme a mensagem manualmente se necessário
