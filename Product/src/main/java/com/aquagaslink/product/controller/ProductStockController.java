@@ -2,24 +2,27 @@ package com.aquagaslink.product.controller;
 
 import com.aquagaslink.product.controller.dto.ProductCadasterDto;
 import com.aquagaslink.product.controller.dto.ProductFormDto;
-import com.aquagaslink.product.queue.producer.MessageProducer;
+import com.aquagaslink.product.queue.ProductEventGateway;
 import com.aquagaslink.product.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.EventListener;
 import java.util.List;
 
 @RestController
 @RequestMapping("/product")
 public class ProductStockController {
 
+
     final ProductService productService;
+    final ProductEventGateway productEventGateway;
 
-    final MessageProducer messageProducer;
 
-    public ProductStockController(ProductService productService, MessageProducer messageProducer) {
+    public ProductStockController(ProductService productService, ProductEventGateway productEventGateway) {
         this.productService = productService;
-        this.messageProducer = messageProducer;
+        this.productEventGateway = productEventGateway;
     }
 
     @PostMapping("/register")
@@ -59,11 +62,20 @@ public class ProductStockController {
         productService.deleteById(id);
     }
 
-    @GetMapping("teste")
-    public void teste() {
-        for (int i = 0; i < 10; i++) {
-            messageProducer.send("Message teste " + i + " numero randomico :" + Math.random());
-        }
-    }
+//    @GetMapping("teste")
+//    public void teste() {
+//
+//            productInput.send(MessageBuilder.withPayload().build());
+//        }
+//    }
+//
+//    @PostMapping("/send")
+//    public String sendMessageToProductQueue(@RequestParam String message) {
+//        for (int i = 0; i < 10; i++) {
+//            productEventGateway.sendProductEvent("Message teste " + i + " numero randomico :" + Math.random());
+//        }
+//
+//        return "Mensagem enviada para a fila de produtos: " + message;
+//    }
 
 }

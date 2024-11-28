@@ -6,7 +6,6 @@ import com.aquagaslink.order_management.helper.ClientOrderHelper;
 import com.aquagaslink.order_management.infrastructure.ClientOrderRepository;
 import com.aquagaslink.order_management.model.ClientOrder;
 import com.aquagaslink.order_management.model.OrderStatus;
-import com.aquagaslink.order_management.queue.producer.MessageProducer;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,12 +32,8 @@ public class OrderServiceTest {
     @Mock
     private ClientOrderRepository clientOrderRepository;
 
-    @Mock
-    private MessageProducer messageProducer;
-
     private OrderService service;
 
-    @Autowired
     private ClientOrderHelper helper;
 
     AutoCloseable mock;
@@ -48,7 +41,7 @@ public class OrderServiceTest {
     @BeforeEach
     void setup(){
         mock = MockitoAnnotations.openMocks(this);
-        service = new OrderService(clientOrderRepository, messageProducer);
+        service = new OrderService(clientOrderRepository);
     };
 
     @AfterEach

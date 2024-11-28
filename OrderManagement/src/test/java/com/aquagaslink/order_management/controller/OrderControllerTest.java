@@ -9,10 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,19 +26,7 @@ public class OrderControllerTest {
     @InjectMocks
     private OrderController controller;
 
-    @Autowired
     private ClientOrderHelper helper;
-
-    @Test
-    public void testSendProductMessage() {
-        String message = "test message";
-
-        ResponseEntity<Void> response = controller.sendProductMessage(message);
-
-        verify(service).sendProduct(message);
-        verify(service).sendDelivery(message);
-        assertEquals(ResponseEntity.ok().build(), response);
-    }
 
     @Test
     public void testGetOrderById() {
