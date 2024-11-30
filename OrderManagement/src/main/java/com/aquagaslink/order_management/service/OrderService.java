@@ -37,7 +37,6 @@ public class OrderService {
     public OrderDto createOrder(OrderFormDto formDto) {
         ClientOrder newClientOrder = clientOrderRepository.save(new ClientOrder(formDto));
         orderEventGateway.sendClientEvent(new OrderToClientOut(formDto.clientId(), newClientOrder.getId()));
-        orderEventGateway.sendProductEvent(new OrderToProductOut(formDto.productId(), formDto.quantity(), newClientOrder.getId()));
         return new OrderDto(newClientOrder);
     }
 
@@ -80,7 +79,7 @@ public class OrderService {
                 order.setHasClientError(false);
                 order.setUpdatedAt();
                 clientOrderRepository.saveAndFlush(order);
-                validateOrderToDelivery(order);
+                orderEventGateway.sendProductEvent(new OrderToProductOut(order.getProductId(), order.getQuantity(), order.getId()));
             }, () -> {
                 logger.severe("Order not found: " + payload.orderId());
             });
@@ -113,8 +112,9 @@ public class OrderService {
     }
 
     public void validateOrderToDelivery(ClientOrder clientOrder) {
-        if(clientOrder.isHasClientError() || clientOrder.isHasProductError()) {
-            //Chamar serviço de delivery
-        }
+        clientOrder.setStatus(OrderStatus.IN_PROGRESS);
+        clientOrder.setUpdatedAt();
+        clientOrderRepository.saveAndFlush(clientOrder);
+        orderEventGateway.sendDeliveryEvent(clientOrder.getId().toString());
     }
 }
