@@ -132,6 +132,8 @@ public class ProductService {
                         false,
                         ""
                 );
+                product.setStock(product.getStock() - payload.quantity());
+                productRepository.save(product);
                 logger.info("Product found: " + product.getName());
             }
 
