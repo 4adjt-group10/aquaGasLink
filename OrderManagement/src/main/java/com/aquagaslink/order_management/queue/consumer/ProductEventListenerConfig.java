@@ -1,6 +1,6 @@
 package com.aquagaslink.order_management.queue.consumer;
 
-import com.aquagaslink.order_management.queue.dto.ProductToOrderIn;
+import com.aquagaslink.order_management.queue.dto.product.ProductToOrderIn;
 import com.aquagaslink.order_management.service.OrderService;
 import com.rabbitmq.client.Channel;
 import org.springframework.context.annotation.Bean;

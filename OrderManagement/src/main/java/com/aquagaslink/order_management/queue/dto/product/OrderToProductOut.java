@@ -1,4 +1,4 @@
-package com.aquagaslink.order_management.queue.dto;
+package com.aquagaslink.order_management.queue.dto.product;
 
 import java.util.UUID;
 

@@ -5,13 +5,13 @@ public class DeliveryClient {
     private String name;
     private String email;
     private String phone;
-    private Address address;
+    private ClientAddress address;
 
     @Deprecated(since = "Only for framework")
     public DeliveryClient() {
     }
 
-    public DeliveryClient(String name, String email, String phone, Address address) {
+    public DeliveryClient(String name, String email, String phone, ClientAddress address) {
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -30,7 +30,7 @@ public class DeliveryClient {
         return phone;
     }
 
-    public Address getAddress() {
+    public ClientAddress getAddress() {
         return address;
     }
 }

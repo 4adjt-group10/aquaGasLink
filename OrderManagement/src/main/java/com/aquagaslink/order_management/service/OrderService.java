@@ -6,10 +6,11 @@ import com.aquagaslink.order_management.infrastructure.ClientOrderRepository;
 import com.aquagaslink.order_management.model.ClientOrder;
 import com.aquagaslink.order_management.model.OrderStatus;
 import com.aquagaslink.order_management.queue.OrderEventGateway;
-import com.aquagaslink.order_management.queue.dto.ClientToOrderIn;
-import com.aquagaslink.order_management.queue.dto.OrderToClientOut;
-import com.aquagaslink.order_management.queue.dto.OrderToProductOut;
-import com.aquagaslink.order_management.queue.dto.ProductToOrderIn;
+import com.aquagaslink.order_management.queue.dto.client.ClientToOrderIn;
+import com.aquagaslink.order_management.queue.dto.client.OrderToClientOut;
+import com.aquagaslink.order_management.queue.dto.delivery.OrderToDeliveryOut;
+import com.aquagaslink.order_management.queue.dto.product.OrderToProductOut;
+import com.aquagaslink.order_management.queue.dto.product.ProductToOrderIn;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -104,17 +105,21 @@ public class OrderService {
                 order.setHasProductError(false);
                 order.setUpdatedAt();
                 clientOrderRepository.saveAndFlush(order);
-                validateOrderToDelivery(order);
+                validateOrderToDelivery(order, payload.productName());
             }, () -> {
                 logger.severe("Order not found: " + payload.orderId());
             });
         }
     }
 
-    public void validateOrderToDelivery(ClientOrder clientOrder) {
+    public void validateOrderToDelivery(ClientOrder clientOrder, String productName) {
         clientOrder.setStatus(OrderStatus.IN_PROGRESS);
         clientOrder.setUpdatedAt();
         clientOrderRepository.saveAndFlush(clientOrder);
-        orderEventGateway.sendDeliveryEvent(clientOrder.getId().toString());
+        orderEventGateway.sendDeliveryEvent(new OrderToDeliveryOut(clientOrder.getId(),
+                clientOrder.getClientId(),
+                clientOrder.getClientAddress(),
+                productName,
+                clientOrder.getPrice()));
     }
 }
