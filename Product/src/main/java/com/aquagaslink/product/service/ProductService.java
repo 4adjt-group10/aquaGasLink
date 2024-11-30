@@ -116,6 +116,7 @@ public class ProductService {
                 productToOrderOut = new ProductToOrderOut(
                         payload.orderId(),
                         product.getId(),
+                        product.getName(),
                         payload.quantity(),
                         product.getPrice(),
                         true,
@@ -127,6 +128,7 @@ public class ProductService {
                 productToOrderOut = new ProductToOrderOut(
                         payload.orderId(),
                         product.getId(),
+                        product.getName(),
                         payload.quantity(),
                         product.getPrice(),
                         false,
@@ -141,6 +143,7 @@ public class ProductService {
         } else {
             productToOrderOut = new ProductToOrderOut(payload.orderId(),
                     payload.productId(),
+                    "",
                     payload.quantity(),
                     null,
                     true,

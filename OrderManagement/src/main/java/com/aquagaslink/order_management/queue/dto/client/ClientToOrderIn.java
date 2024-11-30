@@ -1,4 +1,4 @@
-package com.aquagaslink.order_management.queue.dto;
+package com.aquagaslink.order_management.queue.dto.client;
 
 import com.aquagaslink.order_management.model.ClientAddress;
 
