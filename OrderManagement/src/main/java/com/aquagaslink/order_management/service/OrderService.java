@@ -7,6 +7,8 @@ import com.aquagaslink.order_management.model.ClientOrder;
 import com.aquagaslink.order_management.model.OrderStatus;
 import com.aquagaslink.order_management.queue.OrderEventGateway;
 import com.aquagaslink.order_management.queue.dto.ClientToOrderIn;
+import com.aquagaslink.order_management.queue.dto.OrderToClientOut;
+import com.aquagaslink.order_management.queue.dto.OrderToProductOut;
 import com.aquagaslink.order_management.queue.dto.ProductToOrderIn;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -33,9 +35,9 @@ public class OrderService {
     }
 
     public OrderDto createOrder(OrderFormDto formDto) {
-        orderEventGateway.sendClientEvent(formDto.clientId().toString());
-        orderEventGateway.sendProductEvent(formDto.productId().toString());
         ClientOrder newClientOrder = clientOrderRepository.save(new ClientOrder(formDto));
+        orderEventGateway.sendClientEvent(new OrderToClientOut(formDto.clientId(), newClientOrder.getId()));
+        orderEventGateway.sendProductEvent(new OrderToProductOut(formDto.productId(), newClientOrder.getId()));
         return new OrderDto(newClientOrder);
     }
 
@@ -67,7 +69,8 @@ public class OrderService {
                 order.setHasClientError(true);
                 order.setObservation(order.getObservation().concat("Client error: " + payload.observation()));
                 order.setStatus(OrderStatus.ERROR);
-                clientOrderRepository.save(order);
+                order.setUpdatedAt();
+                clientOrderRepository.saveAndFlush(order);
             }, () -> {
                 logger.severe("Order not found: " + payload.orderId());
             });
@@ -75,7 +78,8 @@ public class OrderService {
             clientOrder.ifPresentOrElse(order -> {
                 order.setClientAddress(payload.address());
                 order.setHasClientError(false);
-                clientOrderRepository.save(order);
+                order.setUpdatedAt();
+                clientOrderRepository.saveAndFlush(order);
                 validateOrderToDelivery(order);
             }, () -> {
                 logger.severe("Order not found: " + payload.orderId());
@@ -91,14 +95,16 @@ public class OrderService {
                 order.setHasProductError(true);
                 order.setObservation(order.getObservation().concat("Product error: " + payload.observation()));
                 order.setStatus(OrderStatus.ERROR);
-                clientOrderRepository.save(order);
+                order.setUpdatedAt();
+                clientOrderRepository.saveAndFlush(order);
             }, () -> {
                 logger.severe("Order not found: " + payload.orderId());
             });
         } else {
             clientOrder.ifPresentOrElse(order -> {
                 order.setHasProductError(false);
-                clientOrderRepository.save(order);
+                order.setUpdatedAt();
+                clientOrderRepository.saveAndFlush(order);
                 validateOrderToDelivery(order);
             }, () -> {
                 logger.severe("Order not found: " + payload.orderId());

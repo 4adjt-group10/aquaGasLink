@@ -1,10 +1,9 @@
-package com.aquagaslink.order_management.model;
+package com.aquagaslink.client.model;
 
 public class ClientAddress {
 
     private String postalCode;
     private String street;
-    private String clientPhone;
     private String clientCity;
     private String clientState;
     private String clientNumber;
@@ -16,14 +15,12 @@ public class ClientAddress {
 
     public ClientAddress(String postalCode,
                          String street,
-                         String clientPhone,
                          String clientCity,
                          String clientState,
                          String clientNumber,
                          String clientCountry) {
         this.postalCode = postalCode;
         this.street = street;
-        this.clientPhone = clientPhone;
         this.clientCity = clientCity;
         this.clientState = clientState;
         this.clientNumber = clientNumber;
@@ -36,10 +33,6 @@ public class ClientAddress {
 
     public String getStreet() {
         return street;
-    }
-
-    public String getClientPhone() {
-        return clientPhone;
     }
 
     public String getClientCity() {

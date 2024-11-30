@@ -16,6 +16,7 @@ public class ClientModel {
     private String name;
     private String email;
     private String phone;
+    private String postalCode;
     private String address;
     private String city;
     private String state;
@@ -25,11 +26,21 @@ public class ClientModel {
     public ClientModel() {
     }
 
-    public ClientModel(String cpf, String name, String email, String phone, String address, String city, String state, String number, String country) {
+    public ClientModel(String cpf,
+                       String name,
+                       String email,
+                       String phone,
+                       String postalCode,
+                       String address,
+                       String city,
+                       String state,
+                       String number,
+                       String country) {
         this.cpf = cpf;
         this.name = name;
         this.email = email;
         this.phone = phone;
+        this.postalCode = postalCode;
         this.address = address;
         this.city = city;
         this.state = state;
@@ -38,15 +49,16 @@ public class ClientModel {
     }
 
     public ClientModel(ClientDTOForm clientDTOForm) {
-        this.cpf = clientDTOForm.cpf();
-        this.name = clientDTOForm.name();
-        this.email = clientDTOForm.email();
-        this.phone = clientDTOForm.phone();
-        this.address = clientDTOForm.address();
-        this.city = clientDTOForm.city();
-        this.state = clientDTOForm.state();
-        this.number = clientDTOForm.number();
-        this.country = clientDTOForm.country();
+        this(clientDTOForm.cpf(),
+                clientDTOForm.name(),
+                clientDTOForm.email(),
+                clientDTOForm.phone(),
+                clientDTOForm.postalCode(),
+                clientDTOForm.address(),
+                clientDTOForm.city(),
+                clientDTOForm.state(),
+                clientDTOForm.number(),
+                clientDTOForm.country());
     }
 
     public void updateFromDTO(ClientDTOForm clientDTOForm) {
@@ -99,5 +111,9 @@ public class ClientModel {
 
     public String getCountry() {
         return country;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
     }
 }
