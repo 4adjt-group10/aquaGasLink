@@ -87,7 +87,7 @@ public class ProductModel {
         return productCode;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

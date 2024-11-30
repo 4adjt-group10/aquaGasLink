@@ -2,6 +2,7 @@ package com.aquagaslink.product.queue.producer;
 
 import com.aquagaslink.product.queue.ProductEventGateway;
 import com.aquagaslink.product.queue.config.QueueProperties;
+import com.aquagaslink.product.queue.dto.ProductToOrderOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -22,19 +23,7 @@ public class ProductEventgatewayWithStreamBridge implements ProductEventGateway 
 
 
     @Override
-    public void sendProductEvent(ProductOut message) {
-        streamBridge.send(queueProperties.getAppOrderChannel(),message);
-        logger.info("Sent to order event: " + message);
-    }
-
-    @Override
-    public void sendClientEvent(ProductOut message) {
-        streamBridge.send(queueProperties.getAppClientChannel(),message);
-        logger.info("Sent product event: " + message);
-    }
-
-    @Override
-    public void sendOrderEvent(ProductOut message) {
+    public void sendOrderEvent(ProductToOrderOut message) {
         streamBridge.send(queueProperties.getAppOrderChannel(),message);
         logger.info("Sent product event: " + message);
     }
