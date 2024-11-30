@@ -132,10 +132,10 @@ public class ProductService {
                         false,
                         ""
                 );
+                logger.info("Product found: " + product.getName());
             }
 
 
-            logger.info("Product found: " + product.getName());
         } else {
             productToOrderOut = new ProductToOrderOut(payload.orderId(),
                     payload.productId(),

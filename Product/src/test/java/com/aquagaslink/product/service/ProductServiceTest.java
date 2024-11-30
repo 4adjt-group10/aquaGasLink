@@ -197,7 +197,7 @@ public class ProductServiceTest {
 
     @Test
     void shouldUpdateProductByCode() {
-        var productDto = helper.createProductDtoWithoutId();
+        var productDto = helper.createProductDtoWithoutIdAndName();
 
         UUID id = UUID.randomUUID();
         var product = helper.createProductModel(id);
@@ -247,9 +247,9 @@ public class ProductServiceTest {
         UUID productId = UUID.randomUUID();
         OrderToProductIn payload = new OrderToProductIn(orderId, 5, productId);
         ProductModel productModel = helper.createProductModel(productId);
-        productModel.setStock(10);
+        productModel.setStock(1);
 
-        when(productRepository.findById(productId)).thenReturn(Optional.of(productModel));
+        when(productRepository.findById(any(UUID.class))).thenReturn(Optional.of(productModel));
 
         service.validateProduct(payload);
 
@@ -257,7 +257,26 @@ public class ProductServiceTest {
         verify(productEventGateway, times(1)).sendOrderEvent(argumentCaptor.capture());
 
         ProductToOrderOut productToOrderOut = argumentCaptor.getValue();
-        assertThat(productToOrderOut.hasError()).isFalse();
+        assertThat(productToOrderOut.hasError()).isTrue();
+    }
+
+    @Test
+    void shouldValidateProductWithNotStock() {
+        UUID orderId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+        OrderToProductIn payload = new OrderToProductIn(orderId, 5, productId);
+        ProductModel productModel = helper.createProductModel(productId);
+        productModel.setStock(0);
+
+        when(productRepository.findById(any(UUID.class))).thenReturn(Optional.of(productModel));
+
+        service.validateProduct(payload);
+
+        ArgumentCaptor<ProductToOrderOut> argumentCaptor = ArgumentCaptor.forClass(ProductToOrderOut.class);
+        verify(productEventGateway, times(1)).sendOrderEvent(argumentCaptor.capture());
+
+        ProductToOrderOut productToOrderOut = argumentCaptor.getValue();
+        assertThat(productToOrderOut.hasError()).isTrue();
     }
 
     @Test
@@ -277,6 +296,25 @@ public class ProductServiceTest {
 
         ProductToOrderOut productToOrderOut = argumentCaptor.getValue();
         assertThat(productToOrderOut.hasError()).isTrue();
+    }
+
+    @Test
+    void shouldValidateProductWitStock() {
+        UUID orderId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+        OrderToProductIn payload = new OrderToProductIn(orderId, 5, productId);
+        ProductModel productModel = helper.createProductModel(productId);
+        productModel.setStock(10);
+
+        when(productRepository.findById(any(UUID.class))).thenReturn(Optional.of(productModel));
+
+        service.validateProduct(payload);
+
+        ArgumentCaptor<ProductToOrderOut> argumentCaptor = ArgumentCaptor.forClass(ProductToOrderOut.class);
+        verify(productEventGateway, times(1)).sendOrderEvent(argumentCaptor.capture());
+
+        ProductToOrderOut productToOrderOut = argumentCaptor.getValue();
+        assertThat(productToOrderOut.hasError()).isFalse();
     }
 
     @Test
