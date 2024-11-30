@@ -37,4 +37,9 @@ public class ClientOrderHelper {
 
     }
 
+    public static OrderFormDto createOrderWithProduct(String productCode){
+        return new OrderFormDto("code", OrderStatus.CREATED,productCode,"nome",UUID.randomUUID());
+
+    }
+
 }
