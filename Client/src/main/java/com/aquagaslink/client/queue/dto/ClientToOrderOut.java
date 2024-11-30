@@ -1,15 +1,14 @@
 package com.aquagaslink.client.queue.dto;
 
+import com.aquagaslink.client.model.ClientAddress;
+
 import java.util.UUID;
 
 public record ClientToOrderOut(UUID id,
-                               String cpf,
+                               UUID orderId,
                                String name,
-                               String email,
                                String phone,
-                               String address,
-                               String city,
-                               String state,
-                               String number,
-                               String country) {
+                               ClientAddress address,
+                               Boolean hasError,
+                               String observation) {
 }

@@ -66,22 +66,4 @@ public class OrderController {
     public ResponseEntity<OrderDto> updateOrderStatus(@PathVariable UUID id, @RequestParam OrderStatus status) {
         return ResponseEntity.ok(orderService.updateOrderStatus(id, status));
     }
-
-    @PostMapping("/send-product-message")
-    public String sendMessageToProductQueue(@RequestParam String message) {
-        for (int i = 0; i < 10; i++) {
-            orderEventGateway.sendProductEvent("Message teste " + i + " numero randomico :" + Math.random());
-        }
-
-        return "Mensagem enviada para a fila de produtos: " + message;
-    }
-
-    @PostMapping("/send-delivery-message")
-    public String sendMessageToDeliveryQueue(@RequestParam String message) {
-        for (int i = 0; i < 10; i++) {
-            orderEventGateway.sendDeliveryEvent("Message teste " + i + " numero randomico :" + Math.random());
-        }
-
-        return "Mensagem enviada para a fila de delivery: " + message;
-    }
 }

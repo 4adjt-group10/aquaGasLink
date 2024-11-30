@@ -3,7 +3,6 @@ package com.aquagaslink.client.controller;
 import com.aquagaslink.client.controller.clientDTO.ClientDTO;
 import com.aquagaslink.client.controller.clientDTO.ClientDTOForm;
 import com.aquagaslink.client.queue.ClientEventGateway;
-import com.aquagaslink.client.queue.dto.ClientToOrderOut;
 import com.aquagaslink.client.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,24 +50,5 @@ public class ClientController {
     public ResponseEntity<Void> deleteClient(@PathVariable UUID id) {
         clientService.deleteClient(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/send-order-message")
-    public String sendMessageToOrderQueue(@RequestParam String message) {
-        for (int i = 0; i < 10; i++) {
-            ClientToOrderOut clientToOrderOut;
-            clientToOrderOut = new ClientToOrderOut(UUID.randomUUID(),"123456789",
-                    "String name",
-                    "String email",
-                    "String phone",
-                    "String address",
-                    "String city",
-                    "String state",
-                    "String number",
-                    "String country");
-            clientEventGateway.sendOrderEvent(clientToOrderOut);
-        }
-
-        return "Delivery -- Mensagem enviada para a fila de order: " + message;
     }
 }

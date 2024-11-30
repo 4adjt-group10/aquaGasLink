@@ -16,6 +16,7 @@ public class ClientOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
     private LocalDateTime createdAt;
     @Nullable
@@ -138,6 +139,7 @@ public class ClientOrder {
         this.clientAddress = clientAddress;
     }
 
-    public void setProductCode(String observation) {
+    public void setUpdatedAt() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

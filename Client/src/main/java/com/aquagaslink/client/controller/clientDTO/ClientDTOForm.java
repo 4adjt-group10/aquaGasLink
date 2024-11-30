@@ -7,6 +7,7 @@ public record ClientDTOForm(
         String name,
         String email,
         String phone,
+        String postalCode,
         String address,
         String city,
         String state,
@@ -15,10 +16,11 @@ public record ClientDTOForm(
 ) {
 
     public ClientDTOForm(ClientModel client) {
-        this(   client.getCpf(),
+        this(client.getCpf(),
                 client.getName(),
                 client.getEmail(),
                 client.getPhone(),
+                client.getPostalCode(),
                 client.getAddress(),
                 client.getCity(),
                 client.getState(),
