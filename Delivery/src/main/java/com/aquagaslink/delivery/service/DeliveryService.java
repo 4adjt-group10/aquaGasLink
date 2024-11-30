@@ -3,10 +3,7 @@ package com.aquagaslink.delivery.service;
 import com.aquagaslink.delivery.controller.dto.DriverLocationForm;
 import com.aquagaslink.delivery.controller.dto.RoutOutput;
 import com.aquagaslink.delivery.infrastructure.DeliveryRepository;
-import com.aquagaslink.delivery.model.Address;
-import com.aquagaslink.delivery.model.Delivery;
-import com.aquagaslink.delivery.model.DeliveryClient;
-import com.aquagaslink.delivery.model.DeliveryStatus;
+import com.aquagaslink.delivery.model.*;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.jetbrains.annotations.NotNull;
@@ -61,7 +58,7 @@ public class DeliveryService {
         return callDirections(url);
     }
 
-    private RoutOutput routeByAddress(Address address, String orderId) {
+    private RoutOutput routeByAddress(ClientAddress address, String orderId) {
         var delivery = getDelivery(orderId);
         var clientAddress = delivery.getDeliveryClient().getAddress();
         String destination = generateLocationByAddress(clientAddress);
@@ -152,17 +149,17 @@ public class DeliveryService {
         return new RoutOutput(routes);
     }
 
-    private @NotNull String generateLocationByAddress(Address address) {
+    private @NotNull String generateLocationByAddress(ClientAddress address) {
         return address.getStreet() + " " +
-                address.getNumber() + " " +
-                address.getCity() + " " +
-                address.getState() + " " +
-                address.getCountry();
+                address.getClientNumber() + " " +
+                address.getClientCity() + " " +
+                address.getClientState() + " " +
+                address.getClientCountry();
     }
 
     public void teste() {
-        Address address = new Address("rua dona maria das dores fonseca pereira", 455, "cristina", "santa luzia", "minas gerais", "brasil", "33145660");
-        DeliveryClient deliveryClient = new DeliveryClient("teste", "teste@teste", "31333333333", address);
+        ClientAddress clientAddress = new ClientAddress("33145660", "rua dona maria das dores fonseca pereira", "31333333333", "cristina", "santa luzia", "455", "brasil");
+        DeliveryClient deliveryClient = new DeliveryClient("teste", "teste@teste", "31333333333", clientAddress);
         var delivery = new Delivery(UUID.randomUUID(), deliveryClient, DeliveryStatus.PENDING);
         deliveryRepository.save(delivery);
     }
