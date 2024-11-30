@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.EventListener;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/product")
@@ -36,7 +37,7 @@ public class ProductStockController {
     }
 
     @GetMapping("/find-id/{id}")
-    public ResponseEntity<ProductCadasterDto> findById(@PathVariable("id") Long id) {
+    public ResponseEntity<ProductCadasterDto> findById(@PathVariable("id") UUID id) {
 
         return ResponseEntity.ok(productService.findById(id));
     }
@@ -58,24 +59,9 @@ public class ProductStockController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable("id") Long id) {
+    public void deleteProduct(@PathVariable("id") UUID id) {
         productService.deleteById(id);
     }
 
-//    @GetMapping("teste")
-//    public void teste() {
-//
-//            productInput.send(MessageBuilder.withPayload().build());
-//        }
-//    }
-//
-//    @PostMapping("/send")
-//    public String sendMessageToProductQueue(@RequestParam String message) {
-//        for (int i = 0; i < 10; i++) {
-//            productEventGateway.sendProductEvent("Message teste " + i + " numero randomico :" + Math.random());
-//        }
-//
-//        return "Mensagem enviada para a fila de produtos: " + message;
-//    }
 
 }

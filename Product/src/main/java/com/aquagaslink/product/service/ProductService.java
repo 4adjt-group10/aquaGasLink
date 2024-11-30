@@ -61,7 +61,7 @@ public class ProductService {
     private ProductModel findByIdOrNameOrProductCode(ProductFormDto productFormDto) {
 
         Optional<ProductModel> product;
-        if (Objects.nonNull(productFormDto.id()) && productFormDto.id() > 0) {
+        if (Objects.nonNull(productFormDto.id())) {
             product = productRepository.findById(productFormDto.id());
         } else if (StringUtils.isNotEmpty(productFormDto.name())) {
             product = productRepository.findByName(productFormDto.name());
@@ -103,7 +103,7 @@ public class ProductService {
         return productCadasterDtos;
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         productRepository.deleteById(id);
     }
 
@@ -112,15 +112,29 @@ public class ProductService {
         ProductToOrderOut productToOrderOut;
         if (productModel.isPresent()) {
             var product = productModel.get();
-            //TODO: Implementar a validação de estoque
-            productToOrderOut = new ProductToOrderOut(
-                    payload.orderId(),
-                    product.getId(),
-                    payload.quantity(),
-                    product.getPrice(),
-                    false,
-                    ""
-            );
+            if (product.getStock() < payload.quantity() || product.getStock() < 1) {
+                productToOrderOut = new ProductToOrderOut(
+                        payload.orderId(),
+                        product.getId(),
+                        payload.quantity(),
+                        product.getPrice(),
+                        true,
+                        "Estoque abaixo do pedido"
+                );
+                logger.severe("Product with low stock: " + payload.productId());
+
+            } else {
+                productToOrderOut = new ProductToOrderOut(
+                        payload.orderId(),
+                        product.getId(),
+                        payload.quantity(),
+                        product.getPrice(),
+                        false,
+                        ""
+                );
+            }
+
+
             logger.info("Product found: " + product.getName());
         } else {
             productToOrderOut = new ProductToOrderOut(payload.orderId(),
