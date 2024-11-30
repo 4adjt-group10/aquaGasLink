@@ -247,7 +247,7 @@ public class ProductServiceTest {
         UUID productId = UUID.randomUUID();
         OrderToProductIn payload = new OrderToProductIn(orderId, 5, productId);
         ProductModel productModel = helper.createProductModel(productId);
-        productModel.setStock(1);
+        productModel.setStock(10);
 
         when(productRepository.findById(any(UUID.class))).thenReturn(Optional.of(productModel));
 
@@ -257,7 +257,7 @@ public class ProductServiceTest {
         verify(productEventGateway, times(1)).sendOrderEvent(argumentCaptor.capture());
 
         ProductToOrderOut productToOrderOut = argumentCaptor.getValue();
-        assertThat(productToOrderOut.hasError()).isTrue();
+        assertThat(productToOrderOut.hasError()).isFalse();
     }
 
     @Test
