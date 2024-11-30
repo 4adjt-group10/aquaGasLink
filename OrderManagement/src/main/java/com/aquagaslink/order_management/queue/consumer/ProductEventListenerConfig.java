@@ -1,5 +1,7 @@
 package com.aquagaslink.order_management.queue.consumer;
 
+import com.aquagaslink.order_management.queue.dto.ProductToOrderIn;
+import com.aquagaslink.order_management.service.OrderService;
 import com.rabbitmq.client.Channel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,20 +14,27 @@ import java.util.logging.Logger;
 
 @Configuration
 public class ProductEventListenerConfig {
+
     Logger logger = Logger.getLogger(ProductEventListenerConfig.class.getName());
 
-    @Bean
-    public Consumer<Message<String>> productToOrderEventListener() {
-        return message -> {
-            String payload = message.getPayload();
-            logger.info("Produto recebido: " + payload);
+    private final OrderService orderService;
 
+    public ProductEventListenerConfig(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @Bean
+    public Consumer<Message<ProductToOrderIn>> productToOrderEventListener() {
+        return message -> {
+            ProductToOrderIn payload = message.getPayload();
+            logger.info("Produto recebido: " + payload);
             // Processamento da mensagem do produto
             // Confirme a mensagem manualmente se necessário
             MessageHeaders headers = message.getHeaders();
             Long deliveryTag = (Long) headers.get("amqp_deliveryTag");
             Channel channel = (Channel) headers.get("amqp_channel");
             try {
+                orderService.validateProduct(payload);
                 // Processamento da mensagem
                 channel.basicAck(deliveryTag, false);
             } catch (Exception e) {

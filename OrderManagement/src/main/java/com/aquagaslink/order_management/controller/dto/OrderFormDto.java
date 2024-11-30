@@ -1,17 +1,17 @@
 package com.aquagaslink.order_management.controller.dto;
 
-import com.aquagaslink.order_management.model.OrderStatus;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public record OrderFormDto(
-        @NotBlank String code,
-        @NotNull OrderStatus status,
-        @NotBlank String productCode,
-        @NotBlank String clientName,
+        @NotNull UUID productId,
+        @NotNull @Min(1) Integer quantity,
+        @NotNull @Min(1) BigDecimal price,
         @NotNull UUID clientId
+
 ) {
 
 }

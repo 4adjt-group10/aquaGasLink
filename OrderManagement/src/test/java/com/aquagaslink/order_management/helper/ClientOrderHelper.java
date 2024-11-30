@@ -12,29 +12,29 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class ClientOrderHelper {
-
-    public static ClientOrder createClientOrder(String code){
-        return new ClientOrder(code, LocalDateTime.now(),LocalDateTime.now(),OrderStatus.CREATED,"code","nome",UUID.randomUUID());
-    }
-
-
-    public static OrderFormDto createOrderFormDto(String code){
-        return new OrderFormDto(code, OrderStatus.CREATED,"code","nome",UUID.randomUUID());
-
-    }
-
-    public static OrderDto createOrderDto(UUID id){
-        return new OrderDto(id, "code", LocalDateTime.now(), LocalDateTime.now(), OrderStatus.CREATED,"code","nome",UUID.randomUUID());
-
-    }
-
-    public static ClientOrder createClientOrderIdClient(UUID idClient){
-        return new ClientOrder("code", LocalDateTime.now(),LocalDateTime.now(),OrderStatus.CREATED,"code","nome",idClient);
-    }
-
-    public static OrderFormDto createOrderFormDto(){
-        return new OrderFormDto("code",OrderStatus.CANCELLED,"code","nome",UUID.randomUUID());
-
-    }
+//
+//    public static ClientOrder createClientOrder(String code){
+//        return new ClientOrder(code, LocalDateTime.now(),LocalDateTime.now(),OrderStatus.CREATED,"code","nome",UUID.randomUUID());
+//    }
+//
+//
+//    public static OrderFormDto createOrderFormDto(String code){
+//        return new OrderFormDto(code, OrderStatus.CREATED,"code","nome",UUID.randomUUID());
+//
+//    }
+//
+//    public static OrderDto createOrderDto(UUID id){
+//        return new OrderDto(id, "code", LocalDateTime.now(), LocalDateTime.now(), OrderStatus.CREATED,"code","nome",UUID.randomUUID());
+//
+//    }
+//
+//    public static ClientOrder createClientOrderIdClient(UUID idClient){
+//        return new ClientOrder("code", LocalDateTime.now(),LocalDateTime.now(),OrderStatus.CREATED,"code","nome",idClient);
+//    }
+//
+//    public static OrderFormDto createOrderFormDto(){
+//        return new OrderFormDto("code",OrderStatus.CANCELLED,"code","nome",UUID.randomUUID());
+//
+//    }
 
 }
