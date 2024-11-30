@@ -4,12 +4,14 @@ import com.aquagaslink.product.controller.dto.ProductFormDto;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 public class ProductModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
     private String productCode;
     private String name;
     private String description;
@@ -19,7 +21,7 @@ public class ProductModel {
     public ProductModel() {
     }
 
-    public ProductModel(Long id, String name, String description, BigDecimal price, int stock, String productCode) {
+    public ProductModel(UUID id, String name, String description, BigDecimal price, int stock, String productCode) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -28,7 +30,7 @@ public class ProductModel {
         this.productCode = productCode;
     }
 
-    public ProductModel(Long id, String description, String name, BigDecimal price, String productCode, int stock) {
+    public ProductModel(UUID id, String description, String name, BigDecimal price, String productCode, int stock) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -52,7 +54,8 @@ public class ProductModel {
         this.stock = stock;
         this.productCode = productCode;
     }
-    public Long getId() {
+
+    public UUID getId() {
         return id;
     }
 
@@ -84,7 +87,7 @@ public class ProductModel {
         return productCode;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

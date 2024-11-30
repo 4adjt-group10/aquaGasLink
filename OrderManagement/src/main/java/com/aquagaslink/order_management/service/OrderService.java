@@ -5,29 +5,39 @@ import com.aquagaslink.order_management.controller.dto.OrderFormDto;
 import com.aquagaslink.order_management.infrastructure.ClientOrderRepository;
 import com.aquagaslink.order_management.model.ClientOrder;
 import com.aquagaslink.order_management.model.OrderStatus;
-import com.aquagaslink.order_management.queue.producer.MessageProducer;
+import com.aquagaslink.order_management.queue.OrderEventGateway;
+import com.aquagaslink.order_management.queue.dto.ClientToOrderIn;
+import com.aquagaslink.order_management.queue.dto.OrderToClientOut;
+import com.aquagaslink.order_management.queue.dto.OrderToProductOut;
+import com.aquagaslink.order_management.queue.dto.ProductToOrderIn;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 @Service
 public class OrderService {
 
     private static final String ORDER_NOT_FOUND = "Order not found";
 
-    private final ClientOrderRepository clientOrderRepository;
-    private final MessageProducer messageProducer;
+    Logger logger = Logger.getLogger(OrderService.class.getName());
 
-    public OrderService(ClientOrderRepository clientOrderRepository, MessageProducer messageProducer) {
+    private final ClientOrderRepository clientOrderRepository;
+    private final OrderEventGateway orderEventGateway;
+
+    public OrderService(ClientOrderRepository clientOrderRepository, OrderEventGateway orderEventGateway) {
         this.clientOrderRepository = clientOrderRepository;
-        this.messageProducer = messageProducer;
+        this.orderEventGateway = orderEventGateway;
     }
 
     public OrderDto createOrder(OrderFormDto formDto) {
         ClientOrder newClientOrder = clientOrderRepository.save(new ClientOrder(formDto));
+        orderEventGateway.sendClientEvent(new OrderToClientOut(formDto.clientId(), newClientOrder.getId()));
+        orderEventGateway.sendProductEvent(new OrderToProductOut(formDto.productId(), formDto.quantity(), newClientOrder.getId()));
         return new OrderDto(newClientOrder);
     }
 
@@ -51,11 +61,60 @@ public class OrderService {
         return new OrderDto(clientOrderRepository.save(clientOrder));
     }
 
-    public void sendProduct(String message) {
-        messageProducer.sendProduct(message);
+    public void validateClient(ClientToOrderIn payload) {
+        Boolean hasError = payload.hasError();
+        Optional<ClientOrder> clientOrder = clientOrderRepository.findById(payload.orderId());
+        if(hasError) {
+            clientOrder.ifPresentOrElse(order -> {
+                order.setHasClientError(true);
+                order.setObservation(order.getObservation().concat("Client error: " + payload.observation()));
+                order.setStatus(OrderStatus.ERROR);
+                order.setUpdatedAt();
+                clientOrderRepository.saveAndFlush(order);
+            }, () -> {
+                logger.severe("Order not found: " + payload.orderId());
+            });
+        } else {
+            clientOrder.ifPresentOrElse(order -> {
+                order.setClientAddress(payload.address());
+                order.setHasClientError(false);
+                order.setUpdatedAt();
+                clientOrderRepository.saveAndFlush(order);
+                validateOrderToDelivery(order);
+            }, () -> {
+                logger.severe("Order not found: " + payload.orderId());
+            });
+        }
     }
 
-    public void sendDelivery(String message) {
-        messageProducer.sendDelivery(message);
+    public void validateProduct(ProductToOrderIn payload) {
+        Boolean hasError = payload.hasError();
+        Optional<ClientOrder> clientOrder = clientOrderRepository.findById(payload.orderId());
+        if(hasError) {
+            clientOrder.ifPresentOrElse(order -> {
+                order.setHasProductError(true);
+                order.setObservation(order.getObservation().concat("Product error: " + payload.observation()));
+                order.setStatus(OrderStatus.ERROR);
+                order.setUpdatedAt();
+                clientOrderRepository.saveAndFlush(order);
+            }, () -> {
+                logger.severe("Order not found: " + payload.orderId());
+            });
+        } else {
+            clientOrder.ifPresentOrElse(order -> {
+                order.setHasProductError(false);
+                order.setUpdatedAt();
+                clientOrderRepository.saveAndFlush(order);
+                validateOrderToDelivery(order);
+            }, () -> {
+                logger.severe("Order not found: " + payload.orderId());
+            });
+        }
+    }
+
+    public void validateOrderToDelivery(ClientOrder clientOrder) {
+        if(clientOrder.isHasClientError() || clientOrder.isHasProductError()) {
+            //Chamar serviço de delivery
+        }
     }
 }

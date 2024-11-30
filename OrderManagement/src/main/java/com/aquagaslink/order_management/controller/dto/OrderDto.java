@@ -10,23 +10,17 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record OrderDto(
         UUID id,
-        String code,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         OrderStatus status,
-        String productCode,
-        String clientName,
         UUID clientId
 ) {
 
     public OrderDto(ClientOrder clientOrder) {
         this(clientOrder.getId(),
-                clientOrder.getCode(),
                 clientOrder.getCreatedAt(),
                 clientOrder.getUpdatedAt(),
                 clientOrder.getStatus(),
-                clientOrder.getProductCode(),
-                clientOrder.getClientName(),
                 clientOrder.getClientId());
     }
 }

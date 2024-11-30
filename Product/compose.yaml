@@ -22,7 +22,6 @@ services:
     image: maven:3.8.4-openjdk-17
     volumes:
       - ./:/app
-      - ./products.csv:/app/products.csv
     working_dir: /app
     command: bash -c "mvn clean install && cp target/Product.jar /app/Product.jar && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar /app/Product.jar"
     environment:

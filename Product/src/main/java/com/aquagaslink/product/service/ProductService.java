@@ -4,23 +4,29 @@ import com.aquagaslink.product.controller.dto.ProductCadasterDto;
 import com.aquagaslink.product.controller.dto.ProductFormDto;
 import com.aquagaslink.product.infrastructure.ProductRepository;
 import com.aquagaslink.product.model.ProductModel;
+import com.aquagaslink.product.queue.ProductEventGateway;
+import com.aquagaslink.product.queue.dto.OrderToProductIn;
+import com.aquagaslink.product.queue.dto.ProductToOrderOut;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.logging.Logger;
 
 @Service
 public class ProductService {
+
+    Logger logger = Logger.getLogger(ProductService.class.getName());
+
     private static final String PRODUCT_NOT_FOUND = "Product not found";
     final ProductRepository productRepository;
+    private final ProductEventGateway productEventGateway;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, ProductEventGateway productEventGateway) {
         this.productRepository = productRepository;
+        this.productEventGateway = productEventGateway;
     }
 
 
@@ -55,7 +61,7 @@ public class ProductService {
     private ProductModel findByIdOrNameOrProductCode(ProductFormDto productFormDto) {
 
         Optional<ProductModel> product;
-        if (Objects.nonNull(productFormDto.id()) && productFormDto.id() > 0) {
+        if (Objects.nonNull(productFormDto.id())) {
             product = productRepository.findById(productFormDto.id());
         } else if (StringUtils.isNotEmpty(productFormDto.name())) {
             product = productRepository.findByName(productFormDto.name());
@@ -71,7 +77,7 @@ public class ProductService {
         return products;
     }
 
-    public ProductCadasterDto findById(Long id) {
+    public ProductCadasterDto findById(UUID id) {
         var product = productRepository.findById(id);
         return product.map(ProductService::generateDtoOut).orElseThrow(() -> new EntityNotFoundException(PRODUCT_NOT_FOUND));
     }
@@ -97,7 +103,52 @@ public class ProductService {
         return productCadasterDtos;
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         productRepository.deleteById(id);
+    }
+
+    public void validateProduct(OrderToProductIn payload) {
+        Optional<ProductModel> productModel = productRepository.findById(payload.productId());
+        ProductToOrderOut productToOrderOut;
+        if (productModel.isPresent()) {
+            var product = productModel.get();
+            if (product.getStock() < payload.quantity() || product.getStock() < 1) {
+                productToOrderOut = new ProductToOrderOut(
+                        payload.orderId(),
+                        product.getId(),
+                        payload.quantity(),
+                        product.getPrice(),
+                        true,
+                        "Estoque abaixo do pedido"
+                );
+                logger.severe("Product with low stock: " + payload.productId());
+
+            } else {
+                productToOrderOut = new ProductToOrderOut(
+                        payload.orderId(),
+                        product.getId(),
+                        payload.quantity(),
+                        product.getPrice(),
+                        false,
+                        ""
+                );
+                product.setStock(product.getStock() - payload.quantity());
+                productRepository.save(product);
+                logger.info("Product found: " + product.getName());
+            }
+
+
+        } else {
+            productToOrderOut = new ProductToOrderOut(payload.orderId(),
+                    payload.productId(),
+                    payload.quantity(),
+                    null,
+                    true,
+                    "Product not found"
+            );
+            logger.severe("Product not found: " + payload.productId());
+        }
+
+        productEventGateway.sendOrderEvent(productToOrderOut);
     }
 }

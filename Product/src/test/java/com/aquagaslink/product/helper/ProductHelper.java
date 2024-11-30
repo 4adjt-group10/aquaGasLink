@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class ProductHelper {
 
-    public static ProductModel createProductModel(Long id){
+    public static ProductModel createProductModel(UUID id){
         return new ProductModel(id, "produto","descrição",new BigDecimal("10"),10,"code");
     }
 
@@ -21,20 +21,23 @@ public class ProductHelper {
         return new ProductModel("produto","descrição",new BigDecimal("10"),10,productCode);
     }
 
-    public static ProductFormDto createProductDto(Long id){
+    public static ProductFormDto createProductDto(UUID id){
         return new ProductFormDto(id,"produto","descrição",new BigDecimal("10"),10,"code");
     }
 
-    public static ProductFormDto createProductDtoWith(String name, String code){
-        return new ProductFormDto(null,name,"descrição",new BigDecimal("10"),10,code);
-    }
-
-    public static ProductCadasterDto createProductCadasterDto(Long id){
+    public static ProductCadasterDto createProductCadasterDto(UUID id){
         return new ProductCadasterDto(id,"produto","descrição",new BigDecimal("10"),10,"code");
     }
 
     public static ProductModel createProductModelWithoutId(){
         return new ProductModel("produto","descrição",new BigDecimal("10"),10,"code");
+    }
+
+    public static ProductFormDto createProductDtoWithoutId(){
+        return new ProductFormDto(null,"produto","descrição",new BigDecimal("10"),10,"code");
+    }
+    public static ProductFormDto createProductDtoWithoutIdAndName(){
+        return new ProductFormDto(null,"","descrição",new BigDecimal("10"),10,"code");
     }
 
     //Long id, String name, String description, BigDecimal price, int stock, String productCode

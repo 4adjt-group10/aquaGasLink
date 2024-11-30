@@ -3,6 +3,7 @@ package com.aquagaslink.order_management.controller;
 import com.aquagaslink.order_management.controller.dto.OrderDto;
 import com.aquagaslink.order_management.controller.dto.OrderFormDto;
 import com.aquagaslink.order_management.model.OrderStatus;
+import com.aquagaslink.order_management.queue.OrderEventGateway;
 import com.aquagaslink.order_management.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -21,14 +22,17 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @RequestMapping("/order")
 public class OrderController {
 
+
     private static final String PAGEABLE_DESCRIPTION = """
         Accepts sorting parameters passing them in the URL, such as '?page=2&size=5&sort=createdAt,desc'
          to fetch the third page (page count starts at 0), with 5 records per page, sorted by createdAt in descending order.
     """;
 
+    private final OrderEventGateway orderEventGateway;
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderEventGateway orderEventGateway, OrderService orderService) {
+        this.orderEventGateway = orderEventGateway;
         this.orderService = orderService;
     }
 
@@ -61,13 +65,5 @@ public class OrderController {
     @Operation(summary = "Update order status")
     public ResponseEntity<OrderDto> updateOrderStatus(@PathVariable UUID id, @RequestParam OrderStatus status) {
         return ResponseEntity.ok(orderService.updateOrderStatus(id, status));
-    }
-
-    @PostMapping("/send-product")
-    @Operation(summary = "Send product message to queue")
-    public ResponseEntity<Void> sendProductMessage(@RequestBody String message) {
-        orderService.sendProduct(message);
-        orderService.sendDelivery(message);
-        return ResponseEntity.ok().build();
     }
 }

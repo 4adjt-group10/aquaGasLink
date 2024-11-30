@@ -1,8 +1,13 @@
 package com.aquagaslink.order_management.model;
 
 import com.aquagaslink.order_management.controller.dto.OrderFormDto;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -11,40 +16,49 @@ public class ClientOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
-    private String code;
     private LocalDateTime createdAt;
+    @Nullable
     private LocalDateTime updatedAt;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
-    private String productCode;
-    private String clientName;
     private UUID clientId;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private ClientAddress clientAddress;
+    private UUID productId;
+    private Integer quantity;
+    private BigDecimal price;
+    private Boolean hasClientError;
+    private Boolean hasProductError;
+    private String observation;
 
-    public ClientOrder(String code,
-                       LocalDateTime createdAt,
+    public ClientOrder(LocalDateTime createdAt,
                        LocalDateTime updatedAt,
                        OrderStatus status,
-                       String productCode,
-                       String clientName,
-                       UUID clientId) {
-        this.code = code;
+                       UUID clientId,
+                       UUID productId,
+                       Integer quantity,
+                       BigDecimal price) {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.status = status;
-        this.productCode = productCode;
-        this.clientName = clientName;
         this.clientId = clientId;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.price = price;
+        this.observation = StringUtils.EMPTY;
     }
 
     public ClientOrder(OrderFormDto formDto) {
-        this(formDto.code(),
-                LocalDateTime.now(),
+        this(LocalDateTime.now(),
                 null,
-                formDto.status(),
-                formDto.productCode(),
-                formDto.clientName(),
-                formDto.clientId());
+                OrderStatus.CREATED,
+                formDto.clientId(),
+                formDto.productId(),
+                formDto.quantity(),
+                formDto.price());
     }
 
     @Deprecated(since = "Only for frameworks use")
@@ -54,10 +68,6 @@ public class ClientOrder {
 
     public UUID getId() {
         return id;
-    }
-
-    public String getCode() {
-        return code;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -72,28 +82,64 @@ public class ClientOrder {
         return status;
     }
 
-    public String getProductCode() {
-        return productCode;
-    }
-
-    public String getClientName() {
-        return clientName;
-    }
-
     public UUID getClientId() {
         return clientId;
     }
 
+    public boolean isHasClientError() {
+        return hasClientError != null && !hasClientError;
+    }
+
+    public boolean isHasProductError() {
+        return hasProductError != null && !hasProductError;
+    }
+
+    public String getObservation() {
+        return observation;
+    }
+
+    public ClientAddress getClientAddress() {
+        return clientAddress;
+    }
+
+    public UUID getProductId() {
+        return productId;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
     public void merge(OrderFormDto formDto) {
-        this.code = formDto.code();
         this.updatedAt = LocalDateTime.now();
-        this.status = formDto.status();
-        this.productCode = formDto.productCode();
-        this.clientName = formDto.clientName();
         this.clientId = formDto.clientId();
     }
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public void setHasClientError(boolean hasClientError) {
+        this.hasClientError = hasClientError;
+    }
+
+    public void setHasProductError(boolean hasProductError) {
+        this.hasProductError = hasProductError;
+    }
+
+    public void setObservation(String observation) {
+        this.observation = observation;
+    }
+
+    public void setClientAddress(ClientAddress clientAddress) {
+        this.clientAddress = clientAddress;
+    }
+
+    public void setUpdatedAt() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

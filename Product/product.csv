@@ -1,5 +1,8 @@
 description,name,price,productCode,stock
-agua sem gas 500 ml santa cruz,agua,1.00,aguacomum500ml,100
-agua com gas 500 ml santa cruz,agua com gas,1.50,aguacomgas500ml,100
+agua sem gas 500 ml santa cruz,agua,1.00,aguacomum500ml,300
+agua com gas 500 ml santa cruz,agua com gas,1.50,aguacomgas500ml,300
+gas com gas 600 ml santa cruz,gas,150,gas,300
+
+
 
 
