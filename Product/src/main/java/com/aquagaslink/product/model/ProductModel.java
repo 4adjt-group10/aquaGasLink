@@ -30,23 +30,6 @@ public class ProductModel {
         this.productCode = productCode;
     }
 
-    public ProductModel(UUID id, String description, String name, BigDecimal price, String productCode, int stock) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.stock = stock;
-        this.productCode = productCode;
-    }
-
-    public ProductModel(ProductFormDto productFormDto) {
-        this.name = productFormDto.name();
-        this.description = productFormDto.description();
-        this.price = productFormDto.price();
-        this.stock = productFormDto.stock();
-        this.productCode = productFormDto.productCode();
-    }
-
     public ProductModel(String name, String description, BigDecimal price, int stock, String productCode) {
         this.name = name;
         this.description = description;
