@@ -36,9 +36,13 @@ public class ProductHelper {
     public static ProductFormDto createProductDtoWithoutId(){
         return new ProductFormDto(null,"produto","descrição",new BigDecimal("10"),10,"code");
     }
+
     public static ProductFormDto createProductDtoWithoutIdAndName(){
         return new ProductFormDto(null,"","descrição",new BigDecimal("10"),10,"code");
     }
 
+    public static ProductFormDto createProductDtoWith(String name, String code){
+        return new ProductFormDto(null,name,"descrição",new BigDecimal("10"),10,code);
+    }
     //Long id, String name, String description, BigDecimal price, int stock, String productCode
 }
