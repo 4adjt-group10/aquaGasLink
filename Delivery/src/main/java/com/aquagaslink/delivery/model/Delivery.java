@@ -31,7 +31,15 @@ public class Delivery {
     public Delivery() {
     }
 
-    public Delivery(UUID id, DeliveryPerson deliveryPerson, UUID orderId, List<UUID> productIds, DeliveryClient deliveryClient,  String latitude, String longitude, DeliveryStatus status, String observation) {
+    public Delivery(UUID id,
+                    DeliveryPerson deliveryPerson,
+                    UUID orderId,
+                    List<UUID> productIds,
+                    DeliveryClient deliveryClient,
+                    String latitude,
+                    String longitude,
+                    DeliveryStatus status,
+                    String observation) {
         this.id = id;
         this.deliveryPerson = deliveryPerson;
         this.orderId = orderId;
@@ -43,7 +51,14 @@ public class Delivery {
         this.observation = observation;
     }
 
-    public Delivery(DeliveryPerson deliveryPerson, UUID orderId, List<UUID> productIds, DeliveryClient deliveryClient,  String latitude, String longitude, DeliveryStatus status, String observation) {
+    public Delivery(DeliveryPerson deliveryPerson,
+                    UUID orderId,
+                    List<UUID> productIds,
+                    DeliveryClient deliveryClient,
+                    String latitude,
+                    String longitude,
+                    DeliveryStatus status,
+                    String observation) {
         this.deliveryPerson = deliveryPerson;
         this.orderId = orderId;
         this.productIds = productIds;

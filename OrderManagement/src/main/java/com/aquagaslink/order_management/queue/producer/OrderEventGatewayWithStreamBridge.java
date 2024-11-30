@@ -2,8 +2,9 @@ package com.aquagaslink.order_management.queue.producer;
 
 import com.aquagaslink.order_management.queue.OrderEventGateway;
 import com.aquagaslink.order_management.queue.config.QueueProperties;
-import com.aquagaslink.order_management.queue.dto.OrderToClientOut;
-import com.aquagaslink.order_management.queue.dto.OrderToProductOut;
+import com.aquagaslink.order_management.queue.dto.client.OrderToClientOut;
+import com.aquagaslink.order_management.queue.dto.delivery.OrderToDeliveryOut;
+import com.aquagaslink.order_management.queue.dto.product.OrderToProductOut;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +35,7 @@ public class OrderEventGatewayWithStreamBridge implements OrderEventGateway {
     }
 
     @Override
-    public void sendDeliveryEvent(String message) {
+    public void sendDeliveryEvent(OrderToDeliveryOut message) {
         streamBridge.send(queueProperties.getAppDeliveryChannel(),message);
         logger.info("Sent to delivery event: " + message);
     }

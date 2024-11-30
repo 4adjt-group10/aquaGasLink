@@ -22,18 +22,4 @@ public class DeliveryController {
     public RoutOutput tracking(@PathVariable String orderId, @RequestBody DriverLocationForm driverLocationForm) {
         return deliveryService.tracking(orderId, driverLocationForm);
     }
-
-    @GetMapping("/teste")
-    public void teste(){
-        deliveryService.teste();
-    }
-
-    @PostMapping("/send-order-message")
-    public String sendMessageToOrderQueue(@RequestParam String message) {
-        for (int i = 0; i < 10; i++) {
-            orderEventGateway.sendOrderEvent("Message teste " + i + " numero randomico :" + Math.random());
-        }
-
-        return "Delivery -- Mensagem enviada para a fila de order: " + message;
-    }
 }
