@@ -1,9 +1,7 @@
 package com.aquagaslink.product.queue.producer;
 
-import com.aquagaslink.product.batch.JobCompletionNotificationListener;
 import com.aquagaslink.product.queue.ProductEventGateway;
 import com.aquagaslink.product.queue.config.QueueProperties;
-import com.aquagaslink.product.queue.dto.ProductOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;

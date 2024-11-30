@@ -37,7 +37,7 @@ public class OrderService {
     public OrderDto createOrder(OrderFormDto formDto) {
         ClientOrder newClientOrder = clientOrderRepository.save(new ClientOrder(formDto));
         orderEventGateway.sendClientEvent(new OrderToClientOut(formDto.clientId(), newClientOrder.getId()));
-        orderEventGateway.sendProductEvent(new OrderToProductOut(formDto.productId(), newClientOrder.getId()));
+        orderEventGateway.sendProductEvent(new OrderToProductOut(formDto.productId(), formDto.quantity(), newClientOrder.getId()));
         return new OrderDto(newClientOrder);
     }
 

@@ -1,8 +1,9 @@
 package com.aquagaslink.product.controller.dto;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
-public record ProductCadasterDto(Long id,
+public record ProductCadasterDto(UUID id,
                                  String name,
                                  String description,
                                  BigDecimal price,

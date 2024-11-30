@@ -24,7 +24,7 @@ public class ProductItemProcessor implements ItemProcessor<ProductModel, Product
 
         Optional<ProductModel> product;
 
-        if(Objects.nonNull(item.getId()) && item.getId() > 0){
+        if(Objects.nonNull(item.getId())){
             product = productRepository.findById(item.getId());
         }else if(StringUtils.isNotEmpty(item.getName())) {
             product = productRepository.findByName(item.getName());
