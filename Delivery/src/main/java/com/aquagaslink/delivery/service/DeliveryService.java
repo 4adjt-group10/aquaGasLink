@@ -4,6 +4,7 @@ import com.aquagaslink.delivery.controller.dto.DriverLocationForm;
 import com.aquagaslink.delivery.controller.dto.RoutOutput;
 import com.aquagaslink.delivery.infrastructure.DeliveryRepository;
 import com.aquagaslink.delivery.model.*;
+import com.aquagaslink.delivery.queue.dto.OrderToDeliveryIn;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -159,8 +161,17 @@ public class DeliveryService {
 
     public void teste() {
         ClientAddress clientAddress = new ClientAddress("33145660", "rua dona maria das dores fonseca pereira", "31333333333", "cristina", "santa luzia", "455", "brasil");
-        DeliveryClient deliveryClient = new DeliveryClient("teste", "teste@teste", "31333333333", clientAddress);
-        var delivery = new Delivery(UUID.randomUUID(), deliveryClient, DeliveryStatus.PENDING);
+        DeliveryClient deliveryClient = new DeliveryClient(UUID.randomUUID(),"teste", clientAddress);
+        DeliveryProduct deliveryProduct = new DeliveryProduct( "Botijão de gás", BigDecimal.TEN);
+        var delivery = new Delivery(UUID.randomUUID(), deliveryClient, deliveryProduct, DeliveryStatus.PENDING);
+        deliveryRepository.save(delivery);
+    }
+
+    public void createDelivery(OrderToDeliveryIn payload) {
+        var delivery = new Delivery(payload.orderId(),
+                new DeliveryClient(payload.clientId(), payload.clientName(), payload.address()),
+                new DeliveryProduct(payload.productName(), payload.productPrice()),
+                DeliveryStatus.PENDING);
         deliveryRepository.save(delivery);
     }
 }

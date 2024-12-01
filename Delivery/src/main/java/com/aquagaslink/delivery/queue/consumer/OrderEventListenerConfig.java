@@ -1,5 +1,7 @@
 package com.aquagaslink.delivery.queue.consumer;
 
+import com.aquagaslink.delivery.queue.dto.OrderToDeliveryIn;
+import com.aquagaslink.delivery.service.DeliveryService;
 import com.rabbitmq.client.Channel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +17,16 @@ public class OrderEventListenerConfig {
 
     Logger logger = Logger.getLogger(OrderEventListenerConfig.class.getName());
 
+    private final DeliveryService deliveryService;
+
+    public OrderEventListenerConfig(DeliveryService deliveryService) {
+        this.deliveryService = deliveryService;
+    }
+
     @Bean
-    public Consumer<Message<String>> orderToDeliveryEventListener() {
+    public Consumer<Message<OrderToDeliveryIn>> orderToDeliveryEventListener() {
         return message -> {
-            String payload = message.getPayload();
+            OrderToDeliveryIn payload = message.getPayload();
             logger.info("Pedido recebido para entrega: " + payload);
 
             // Processamento da mensagem do produto
@@ -28,6 +36,7 @@ public class OrderEventListenerConfig {
             Channel channel = (Channel) headers.get("amqp_channel");
             try {
                 // Processamento da mensagem
+                deliveryService.createDelivery(payload);
                 channel.basicAck(deliveryTag, false);
             } catch (Exception e) {
                 // Em caso de erro, nack a mensagem para DLQ
