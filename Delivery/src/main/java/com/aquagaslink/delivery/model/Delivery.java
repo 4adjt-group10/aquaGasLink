@@ -24,6 +24,7 @@ public class Delivery {
     private DeliveryClient deliveryClient;
     private String latitude;
     private String longitude;
+    @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
     private String observation;
 

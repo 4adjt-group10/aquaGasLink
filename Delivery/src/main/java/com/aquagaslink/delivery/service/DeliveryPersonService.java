@@ -6,14 +6,17 @@ import com.aquagaslink.delivery.infrastructure.DeliveryPersonRepository;
 import com.aquagaslink.delivery.model.DeliveryPerson;
 import com.aquagaslink.delivery.model.DeliveryPersonStatus;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
-import static com.aquagaslink.delivery.model.DeliveryPersonStatus.AVAILABLE;
+import static com.aquagaslink.delivery.model.DeliveryPersonStatus.BUSY;
 
 @Service
 public class DeliveryPersonService {
@@ -57,8 +60,27 @@ public class DeliveryPersonService {
                 .orElseThrow(() -> new EntityNotFoundException("Delivery person not found"));
     }
 
-    public DeliveryPerson getAvailableDeliveryPerson() {
-        return deliveryPersonRepository.findFirstByStatus(AVAILABLE)
-                .orElseThrow(() -> new EntityNotFoundException("No available delivery person"));
+    /**
+     * This method is scheduled to run every 2 minutes, every day.
+     * {@code @Scheduled(cron = "0 0/2 * * * *")} configures this scheduling.
+     */
+    @Scheduled(cron = "0 0/2 * * * *")
+    @Async
+    public void updateStatusToAvailable() {
+        deliveryPersonRepository.findFirstByStatus(BUSY).ifPresent(deliveryPerson -> {
+
+        });
+    }
+
+    public Optional<DeliveryPerson> findFirstByStatus(DeliveryPersonStatus deliveryPersonStatus) {
+        return deliveryPersonRepository.findFirstByStatus(deliveryPersonStatus);
+    }
+
+    public void save(@NotNull DeliveryPerson deliveryPerson) {
+        deliveryPersonRepository.save(deliveryPerson);
+    }
+
+    public Optional<DeliveryPerson> findById(UUID id) {
+        return deliveryPersonRepository.findById(id);
     }
 }

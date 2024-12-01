@@ -15,6 +15,7 @@ public class DeliveryPerson {
     private String name;
     private String email;
     private String phone;
+    @Enumerated(EnumType.STRING)
     private DeliveryPersonStatus status;
     private String vehiclePlate;
 
@@ -31,9 +32,11 @@ public class DeliveryPerson {
     }
 
     public DeliveryPerson(DeliveryPersonForm deliveryPersonForm) {
-        this.name = deliveryPersonForm.name();
-        this.email = deliveryPersonForm.email();
-        this.phone = deliveryPersonForm.phone();
+        this(deliveryPersonForm.name(),
+                deliveryPersonForm.email(),
+                deliveryPersonForm.phone(),
+                deliveryPersonForm.status(),
+                deliveryPersonForm.vehiclePlate());
     }
 
     public UUID getId() {
@@ -64,5 +67,9 @@ public class DeliveryPerson {
         this.name = form.name();
         this.email = form.email();
         this.phone = form.phone();
+    }
+
+    public void setStatus(DeliveryPersonStatus deliveryPersonStatus) {
+        this.status = deliveryPersonStatus;
     }
 }

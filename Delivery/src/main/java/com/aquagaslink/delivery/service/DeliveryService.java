@@ -4,7 +4,9 @@ import com.aquagaslink.delivery.controller.dto.DriverLocationForm;
 import com.aquagaslink.delivery.controller.dto.RoutOutput;
 import com.aquagaslink.delivery.infrastructure.DeliveryRepository;
 import com.aquagaslink.delivery.model.*;
+import com.aquagaslink.delivery.queue.DeliveryEventGateway;
 import com.aquagaslink.delivery.queue.dto.OrderToDeliveryIn;
+import com.aquagaslink.delivery.queue.dto.DeliveryToOrderOut;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +19,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -27,8 +28,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import static com.aquagaslink.delivery.model.DeliveryPersonStatus.AVAILABLE;
+import static com.aquagaslink.delivery.model.DeliveryPersonStatus.BUSY;
 import static com.aquagaslink.delivery.model.DeliveryStatus.*;
 
 @Service
@@ -40,28 +44,41 @@ public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final DeliveryPersonService deliveryPersonService;
+    private final DeliveryEventGateway deliveryEventGateway;
     private String apiKey = "AIzaSyAwyKbMBsFNJQFBDFAnhqy1Biu7qrfObP8"; // Substitua pela sua chave de API
 
-    public DeliveryService(DeliveryRepository deliveryRepository, DeliveryPersonService deliveryPersonService) {
+    public DeliveryService(DeliveryRepository deliveryRepository, DeliveryPersonService deliveryPersonService, DeliveryEventGateway deliveryEventGateway) {
         this.deliveryRepository = deliveryRepository;
         this.deliveryPersonService = deliveryPersonService;
+        this.deliveryEventGateway = deliveryEventGateway;
     }
 
     public RoutOutput tracking(String orderId, DriverLocationForm driverLocationForm) {
         if (StringUtils.isNotEmpty(driverLocationForm.Latitude())&& StringUtils.isNotEmpty(driverLocationForm.Longitude())) {
-            return routeByLatAndLong(driverLocationForm, orderId);
+            return routeByLatAndLongAndSave(driverLocationForm, orderId);
         } else {
             return routeByAddress(driverLocationForm.address(), orderId);
         }
     }
 
-    private RoutOutput routeByLatAndLong(DriverLocationForm driverLocationForm, String orderId) {
+    private RoutOutput routeByLatAndLongAndSave(DriverLocationForm driverLocationForm, String orderId) {
         var delivery = getDelivery(orderId);
         delivery.setLatitude(driverLocationForm.Latitude());
         delivery.setLongitude(driverLocationForm.Longitude());
+        deliveryRepository.save(delivery);
         var address = delivery.getDeliveryClient().getAddress();
         String destination = generateLocationByAddress(address);
         String origin = driverLocationForm.Latitude().concat(",").concat(driverLocationForm.Longitude());
+        String url = buildDirectionsUrl(origin, destination);
+        return callDirections(url);
+    }
+
+    public RoutOutput getTrackingByClient(UUID clientId) {
+        Delivery delivery = deliveryRepository.findByClientIdAndStatus(clientId.toString(), IN_PROGRESS)
+                .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND));
+        var clientAddress = delivery.getDeliveryClient().getAddress();
+        String destination = generateLocationByAddress(clientAddress);
+        String origin = delivery.getLatitude().concat(",").concat(delivery.getLongitude());
         String url = buildDirectionsUrl(origin, destination);
         return callDirections(url);
     }
@@ -165,14 +182,6 @@ public class DeliveryService {
                 address.getClientCountry();
     }
 
-    public void teste() {
-        ClientAddress clientAddress = new ClientAddress("33145660", "rua dona maria das dores fonseca pereira", "31333333333", "cristina", "santa luzia", "455", "brasil");
-        DeliveryClient deliveryClient = new DeliveryClient(UUID.randomUUID(),"teste", clientAddress);
-        DeliveryProduct deliveryProduct = new DeliveryProduct( "Botijão de gás", BigDecimal.TEN);
-        var delivery = new Delivery(UUID.randomUUID(), deliveryClient, deliveryProduct, PENDING);
-        deliveryRepository.save(delivery);
-    }
-
     public void createDelivery(OrderToDeliveryIn payload) {
         var delivery = new Delivery(payload.orderId(),
                 new DeliveryClient(payload.clientId(), payload.clientName(), payload.address()),
@@ -188,10 +197,26 @@ public class DeliveryService {
      @Scheduled(cron = "0 0/2 * * * *")
      @Async
      public void processDeliveries() {
-         deliveryRepository.findByStatus(PENDING).forEach(delivery -> {
-             delivery.setStatus(IN_PROGRESS);
-             delivery.setDeliveryPerson(deliveryPersonService.getAvailableDeliveryPerson());
-             deliveryRepository.save(delivery);
+         deliveryPersonService.findFirstByStatus(AVAILABLE).ifPresent(deliveryPerson -> {
+             deliveryRepository.findByStatus(PENDING).forEach(delivery -> {
+                 delivery.setStatus(IN_PROGRESS);
+                 delivery.setDeliveryPerson(deliveryPerson);
+                 deliveryPerson.setStatus(BUSY);
+                 deliveryRepository.save(delivery);
+                 deliveryPersonService.save(deliveryPerson);
+             });
          });
+     }
+
+     public void updateStatusAndSendToOrder(UUID deliveryId, DeliveryStatus status) {
+         var delivery = deliveryRepository.findById(deliveryId)
+                 .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND));
+         delivery.setStatus(status);
+         deliveryPersonService.findById(delivery.getDeliveryPerson().getId()).ifPresent(deliveryPerson -> {
+             deliveryPerson.setStatus(AVAILABLE);
+             deliveryPersonService.save(deliveryPerson);
+         });
+         deliveryRepository.save(delivery);
+         deliveryEventGateway.sendOrderEvent(new DeliveryToOrderOut(delivery.getOrderId()));
      }
 }
