@@ -14,4 +14,6 @@ public interface DeliveryPersonRepository extends JpaRepository<DeliveryPerson, 
     Optional<DeliveryPerson> findByEmail(String email);
 
     Page<DeliveryPerson> findAllByStatus(DeliveryPersonStatus status, Pageable pageable);
+
+    Optional<DeliveryPerson> findFirstByStatus(DeliveryPersonStatus status);
 }

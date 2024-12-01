@@ -10,6 +10,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.aquagaslink.delivery.model.DeliveryStatus.*;
+
 @Service
 public class DeliveryService {
     private static final Logger logger = LoggerFactory.getLogger(DeliveryService.class);
@@ -34,11 +38,13 @@ public class DeliveryService {
     private static final String DURATION = "duration";
     private static final String DISTANCE = "distance";
 
-    final private DeliveryRepository deliveryRepository;
+    private final DeliveryRepository deliveryRepository;
+    private final DeliveryPersonService deliveryPersonService;
     private String apiKey = "AIzaSyAwyKbMBsFNJQFBDFAnhqy1Biu7qrfObP8"; // Substitua pela sua chave de API
 
-    public DeliveryService(DeliveryRepository deliveryRepository) {
+    public DeliveryService(DeliveryRepository deliveryRepository, DeliveryPersonService deliveryPersonService) {
         this.deliveryRepository = deliveryRepository;
+        this.deliveryPersonService = deliveryPersonService;
     }
 
     public RoutOutput tracking(String orderId, DriverLocationForm driverLocationForm) {
@@ -163,7 +169,7 @@ public class DeliveryService {
         ClientAddress clientAddress = new ClientAddress("33145660", "rua dona maria das dores fonseca pereira", "31333333333", "cristina", "santa luzia", "455", "brasil");
         DeliveryClient deliveryClient = new DeliveryClient(UUID.randomUUID(),"teste", clientAddress);
         DeliveryProduct deliveryProduct = new DeliveryProduct( "Botijão de gás", BigDecimal.TEN);
-        var delivery = new Delivery(UUID.randomUUID(), deliveryClient, deliveryProduct, DeliveryStatus.PENDING);
+        var delivery = new Delivery(UUID.randomUUID(), deliveryClient, deliveryProduct, PENDING);
         deliveryRepository.save(delivery);
     }
 
@@ -171,7 +177,21 @@ public class DeliveryService {
         var delivery = new Delivery(payload.orderId(),
                 new DeliveryClient(payload.clientId(), payload.clientName(), payload.address()),
                 new DeliveryProduct(payload.productName(), payload.productPrice()),
-                DeliveryStatus.PENDING);
+                PENDING);
         deliveryRepository.save(delivery);
     }
+
+    /**
+     * This method is scheduled to run every 2 minutes, every day.
+     * {@code @Scheduled(cron = "0 0/2 * * * *")} configures this scheduling.
+     */
+     @Scheduled(cron = "0 0/2 * * * *")
+     @Async
+     public void processDeliveries() {
+         deliveryRepository.findByStatus(PENDING).forEach(delivery -> {
+             delivery.setStatus(IN_PROGRESS);
+             delivery.setDeliveryPerson(deliveryPersonService.getAvailableDeliveryPerson());
+             deliveryRepository.save(delivery);
+         });
+     }
 }

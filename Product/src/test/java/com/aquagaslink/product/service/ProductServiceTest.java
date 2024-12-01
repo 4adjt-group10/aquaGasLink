@@ -245,7 +245,7 @@ public class ProductServiceTest {
     void shouldValidateProductWithSufficientStock() {
         UUID orderId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        OrderToProductIn payload = new OrderToProductIn(orderId, 5, productId);
+        OrderToProductIn payload = new OrderToProductIn(productId, 5, orderId, "Client name");
         ProductModel productModel = helper.createProductModel(productId);
         productModel.setStock(10);
 
@@ -264,7 +264,7 @@ public class ProductServiceTest {
     void shouldValidateProductWithNotStock() {
         UUID orderId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        OrderToProductIn payload = new OrderToProductIn(orderId, 5, productId);
+        OrderToProductIn payload = new OrderToProductIn(productId, 5, orderId, "Client name");
         ProductModel productModel = helper.createProductModel(productId);
         productModel.setStock(0);
 
@@ -283,7 +283,7 @@ public class ProductServiceTest {
     void shouldValidateProductWithInsufficientStock() {
         UUID orderId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        OrderToProductIn payload = new OrderToProductIn(orderId, 5, productId);
+        OrderToProductIn payload = new OrderToProductIn(productId, 5, orderId, "Client name");
         ProductModel productModel = helper.createProductModel(productId);
         productModel.setStock(2);
 
@@ -302,7 +302,7 @@ public class ProductServiceTest {
     void shouldValidateProductWitStock() {
         UUID orderId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        OrderToProductIn payload = new OrderToProductIn(orderId, 5, productId);
+        OrderToProductIn payload = new OrderToProductIn(productId, 5, orderId, "Client name");
         ProductModel productModel = helper.createProductModel(productId);
         productModel.setStock(10);
 
@@ -321,7 +321,7 @@ public class ProductServiceTest {
     void shouldValidateProductNotFound() {
         UUID orderId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        OrderToProductIn payload = new OrderToProductIn(orderId, 5, productId);
+        OrderToProductIn payload = new OrderToProductIn(productId, 5, orderId, "Client name");
 
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 

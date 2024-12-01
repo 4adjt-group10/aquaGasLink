@@ -128,4 +128,8 @@ public class Delivery {
     public void setObservation(String observation) {
         this.observation = observation;
     }
+
+    public void setDeliveryPerson(DeliveryPerson deliveryPerson) {
+        this.deliveryPerson = deliveryPerson;
+    }
 }

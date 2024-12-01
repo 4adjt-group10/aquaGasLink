@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+import static com.aquagaslink.delivery.model.DeliveryPersonStatus.AVAILABLE;
+
 @Service
 public class DeliveryPersonService {
 
@@ -53,5 +55,10 @@ public class DeliveryPersonService {
         return deliveryPersonRepository.findById(id)
                 .map(DeliveryPersonDto::new)
                 .orElseThrow(() -> new EntityNotFoundException("Delivery person not found"));
+    }
+
+    public DeliveryPerson getAvailableDeliveryPerson() {
+        return deliveryPersonRepository.findFirstByStatus(AVAILABLE)
+                .orElseThrow(() -> new EntityNotFoundException("No available delivery person"));
     }
 }
