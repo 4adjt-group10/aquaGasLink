@@ -51,7 +51,7 @@ class OrderEventListenerConfigurationTest {
     void orderToProductEventListener_success() throws IOException {
         UUID orderId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
-        OrderToProductIn payload = new OrderToProductIn(orderId, 5,productId);
+        OrderToProductIn payload = new OrderToProductIn(productId, 2, orderId, "Client name");
 
         Map<String, Object> headers = new HashMap<>();
         headers.put("amqp_deliveryTag", 1L);

@@ -1,80 +1,3 @@
-services:
-  net-creator:
-    image: busybox
-    command: ["sh", "-c", "docker network create rabbitmq_go_net || true"]
-    networks:
-      - rabbitmq_go_net
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'rabbitmq'
-    ports:
-      - 5672:5672
-      - 15672:15672
-    volumes:
-      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
-      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
-    depends_on:
-      - net-creator
-    networks:
-      - rabbitmq_go_net
-
-  order-db:
-    extends:
-      file: ./OrderManagement/compose.yaml
-      service: order-db
-    depends_on:
-      - net-creator
-
-  order-app:
-    extends:
-      file: ./OrderManagement/compose.yaml
-      service: order-app
-    depends_on:
-      - net-creator
-
-  product-db:
-    extends:
-      file: ./Product/compose.yaml
-      service: product-db
-    depends_on:
-      - net-creator
-
-
-  product-app:
-    extends:
-      file: ./Product/compose.yaml
-      service: product-app
-    depends_on:
-      - net-creator
-
-  client-db:
-    extends:
-      file: ./Client/compose.yaml
-      service: client-db
-    depends_on:
-      - net-creator
-
-  client-app:
-    extends:
-      file: ./Client/compose.yaml
-      service: client-app
-
-
-  delivery-db:
-    extends:
-      file: ./Delivery/compose.yaml
-      service: delivery-db
-    depends_on:
-      - net-creator
-
-  delivery-app:
-    extends:
-      file: ./Delivery/compose.yaml
-      service: delivery-app
-    depends_on:
-      - net-creator
-
 networks:
   product-network:
     name: product-network
@@ -86,3 +9,57 @@ networks:
     name: delivery-network
   rabbitmq_go_net:
     name: rabbitmq_go_net
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - rabbitmq_go_net
+
+  order-db:
+    extends:
+      file: ./OrderManagement/compose.yaml
+      service: order-db
+
+  order-app:
+    extends:
+      file: ./OrderManagement/compose.yaml
+      service: order-app
+
+  product-db:
+    extends:
+      file: ./Product/compose.yaml
+      service: product-db
+
+  product-app:
+    extends:
+      file: ./Product/compose.yaml
+      service: product-app
+
+  client-db:
+    extends:
+      file: ./Client/compose.yaml
+      service: client-db
+
+  client-app:
+    extends:
+      file: ./Client/compose.yaml
+      service: client-app
+
+  delivery-db:
+    extends:
+      file: ./Delivery/compose.yaml
+      service: delivery-db
+
+  delivery-app:
+    extends:
+      file: ./Delivery/compose.yaml
+      service: delivery-app

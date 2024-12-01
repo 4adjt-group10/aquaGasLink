@@ -1,5 +1,7 @@
 package com.aquagaslink.delivery.queue;
 
+import com.aquagaslink.delivery.queue.dto.DeliveryToOrderOut;
+
 public interface DeliveryEventGateway {
-    void sendOrderEvent(String message);
+    void sendOrderEvent(DeliveryToOrderOut message);
 }

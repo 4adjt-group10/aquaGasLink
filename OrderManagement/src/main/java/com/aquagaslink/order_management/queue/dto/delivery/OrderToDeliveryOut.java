@@ -8,6 +8,7 @@ import java.util.UUID;
 public record OrderToDeliveryOut(
         UUID orderId,
         UUID clientId,
+        String clientName,
         ClientAddress address,
         String productName,
         BigDecimal productPrice

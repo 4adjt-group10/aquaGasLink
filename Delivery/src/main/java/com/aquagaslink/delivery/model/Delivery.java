@@ -18,12 +18,13 @@ public class Delivery {
     private UUID orderId;
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private List<UUID> productIds;
+    private DeliveryProduct product;
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private DeliveryClient deliveryClient;
     private String latitude;
     private String longitude;
+    @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
     private String observation;
 
@@ -34,7 +35,7 @@ public class Delivery {
     public Delivery(UUID id,
                     DeliveryPerson deliveryPerson,
                     UUID orderId,
-                    List<UUID> productIds,
+                    DeliveryProduct product,
                     DeliveryClient deliveryClient,
                     String latitude,
                     String longitude,
@@ -43,7 +44,7 @@ public class Delivery {
         this.id = id;
         this.deliveryPerson = deliveryPerson;
         this.orderId = orderId;
-        this.productIds = productIds;
+        this.product = product;
         this.deliveryClient = deliveryClient;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -53,7 +54,7 @@ public class Delivery {
 
     public Delivery(DeliveryPerson deliveryPerson,
                     UUID orderId,
-                    List<UUID> productIds,
+                    DeliveryProduct product,
                     DeliveryClient deliveryClient,
                     String latitude,
                     String longitude,
@@ -61,7 +62,7 @@ public class Delivery {
                     String observation) {
         this.deliveryPerson = deliveryPerson;
         this.orderId = orderId;
-        this.productIds = productIds;
+        this.product = product;
         this.deliveryClient = deliveryClient;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -69,9 +70,10 @@ public class Delivery {
         this.observation = observation;
     }
 
-    public Delivery(UUID orderId, DeliveryClient deliveryClient, DeliveryStatus status) {
+    public Delivery(UUID orderId, DeliveryClient deliveryClient, DeliveryProduct deliveryProduct, DeliveryStatus status) {
         this.orderId = orderId;
         this.deliveryClient = deliveryClient;
+        this.product = deliveryProduct;
         this.status = status;
     }
 
@@ -87,8 +89,8 @@ public class Delivery {
         return orderId;
     }
 
-    public List<UUID> getProductIds() {
-        return productIds;
+    public DeliveryProduct getProduct() {
+        return product;
     }
 
     public DeliveryClient getDeliveryClient() {
@@ -126,5 +128,9 @@ public class Delivery {
 
     public void setObservation(String observation) {
         this.observation = observation;
+    }
+
+    public void setDeliveryPerson(DeliveryPerson deliveryPerson) {
+        this.deliveryPerson = deliveryPerson;
     }
 }

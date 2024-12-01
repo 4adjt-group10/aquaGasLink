@@ -2,6 +2,7 @@ package com.aquagaslink.delivery.queue.producer;
 
 import com.aquagaslink.delivery.queue.DeliveryEventGateway;
 import com.aquagaslink.delivery.queue.config.QueueProperties;
+import com.aquagaslink.delivery.queue.dto.DeliveryToOrderOut;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,7 @@ public class DeliveryEventGatewayWithStreamBridge implements DeliveryEventGatewa
     }
 
     @Override
-    public void sendOrderEvent(String message) {
+    public void sendOrderEvent(DeliveryToOrderOut message) {
         streamBridge.send(queueProperties.getAppOrderChannel(),message);
         logger.info("Sent to order event: " + message);
     }

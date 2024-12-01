@@ -5,6 +5,7 @@ import java.util.UUID;
 
 public record ProductToOrderIn(UUID orderId,
                                UUID productId,
+                               String clientName,
                                String productName,
                                Integer quantity,
                                BigDecimal price,

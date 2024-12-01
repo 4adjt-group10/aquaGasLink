@@ -80,7 +80,7 @@ public class OrderService {
                 order.setHasClientError(false);
                 order.setUpdatedAt();
                 clientOrderRepository.saveAndFlush(order);
-                orderEventGateway.sendProductEvent(new OrderToProductOut(order.getProductId(), order.getQuantity(), order.getId()));
+                orderEventGateway.sendProductEvent(new OrderToProductOut(order.getProductId(), order.getQuantity(), order.getId(), payload.name()));
             }, () -> {
                 logger.severe("Order not found: " + payload.orderId());
             });
@@ -105,19 +105,20 @@ public class OrderService {
                 order.setHasProductError(false);
                 order.setUpdatedAt();
                 clientOrderRepository.saveAndFlush(order);
-                validateOrderToDelivery(order, payload.productName());
+                validateOrderToDelivery(order, payload.productName(), payload.clientName());
             }, () -> {
                 logger.severe("Order not found: " + payload.orderId());
             });
         }
     }
 
-    public void validateOrderToDelivery(ClientOrder clientOrder, String productName) {
+    public void validateOrderToDelivery(ClientOrder clientOrder, String productName, String clientName) {
         clientOrder.setStatus(OrderStatus.IN_PROGRESS);
         clientOrder.setUpdatedAt();
         clientOrderRepository.saveAndFlush(clientOrder);
         orderEventGateway.sendDeliveryEvent(new OrderToDeliveryOut(clientOrder.getId(),
                 clientOrder.getClientId(),
+                clientName,
                 clientOrder.getClientAddress(),
                 productName,
                 clientOrder.getPrice()));

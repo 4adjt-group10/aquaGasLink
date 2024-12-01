@@ -4,26 +4,35 @@ import com.aquagaslink.delivery.controller.dto.DriverLocationForm;
 import com.aquagaslink.delivery.controller.dto.RoutOutput;
 import com.aquagaslink.delivery.infrastructure.DeliveryRepository;
 import com.aquagaslink.delivery.model.*;
+import com.aquagaslink.delivery.queue.DeliveryEventGateway;
+import com.aquagaslink.delivery.queue.dto.DeliveryToOrderOut;
+import com.aquagaslink.delivery.queue.dto.OrderToDeliveryIn;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.aquagaslink.delivery.model.DeliveryPersonStatus.AVAILABLE;
+import static com.aquagaslink.delivery.model.DeliveryPersonStatus.BUSY;
+import static com.aquagaslink.delivery.model.DeliveryStatus.IN_PROGRESS;
+import static com.aquagaslink.delivery.model.DeliveryStatus.PENDING;
 
 @Service
 public class DeliveryService {
@@ -32,28 +41,46 @@ public class DeliveryService {
     private static final String DURATION = "duration";
     private static final String DISTANCE = "distance";
 
-    final private DeliveryRepository deliveryRepository;
+    private final DeliveryRepository deliveryRepository;
+    private final DeliveryPersonService deliveryPersonService;
+    private final DeliveryEventGateway deliveryEventGateway;
     private String apiKey = "AIzaSyAwyKbMBsFNJQFBDFAnhqy1Biu7qrfObP8"; // Substitua pela sua chave de API
 
-    public DeliveryService(DeliveryRepository deliveryRepository) {
+    public DeliveryService(DeliveryRepository deliveryRepository, DeliveryPersonService deliveryPersonService, DeliveryEventGateway deliveryEventGateway) {
         this.deliveryRepository = deliveryRepository;
+        this.deliveryPersonService = deliveryPersonService;
+        this.deliveryEventGateway = deliveryEventGateway;
     }
 
     public RoutOutput tracking(String orderId, DriverLocationForm driverLocationForm) {
         if (StringUtils.isNotEmpty(driverLocationForm.Latitude())&& StringUtils.isNotEmpty(driverLocationForm.Longitude())) {
-            return routeByLatAndLong(driverLocationForm, orderId);
+            return routeByLatAndLongAndSave(driverLocationForm, orderId);
         } else {
             return routeByAddress(driverLocationForm.address(), orderId);
         }
     }
 
-    private RoutOutput routeByLatAndLong(DriverLocationForm driverLocationForm, String orderId) {
+    private RoutOutput routeByLatAndLongAndSave(DriverLocationForm driverLocationForm, String orderId) {
         var delivery = getDelivery(orderId);
         delivery.setLatitude(driverLocationForm.Latitude());
         delivery.setLongitude(driverLocationForm.Longitude());
+        deliveryRepository.save(delivery);
         var address = delivery.getDeliveryClient().getAddress();
         String destination = generateLocationByAddress(address);
         String origin = driverLocationForm.Latitude().concat(",").concat(driverLocationForm.Longitude());
+        String url = buildDirectionsUrl(origin, destination);
+        return callDirections(url);
+    }
+
+    public RoutOutput getTrackingByClient(UUID clientId) {
+        Delivery delivery = deliveryRepository.findByClientIdAndStatus(clientId.toString(), IN_PROGRESS)
+                .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND));
+        var clientAddress = delivery.getDeliveryClient().getAddress();
+        String destination = generateLocationByAddress(clientAddress);
+        if(StringUtils.isBlank(delivery.getLatitude()) || StringUtils.isBlank(delivery.getLongitude())) {
+            throw new EntityNotFoundException("Rastreamento ainda não disponível");
+        }
+        String origin = delivery.getLatitude().concat(",").concat(delivery.getLongitude());
         String url = buildDirectionsUrl(origin, destination);
         return callDirections(url);
     }
@@ -157,10 +184,41 @@ public class DeliveryService {
                 address.getClientCountry();
     }
 
-    public void teste() {
-        ClientAddress clientAddress = new ClientAddress("33145660", "rua dona maria das dores fonseca pereira", "31333333333", "cristina", "santa luzia", "455", "brasil");
-        DeliveryClient deliveryClient = new DeliveryClient("teste", "teste@teste", "31333333333", clientAddress);
-        var delivery = new Delivery(UUID.randomUUID(), deliveryClient, DeliveryStatus.PENDING);
+    public void createDelivery(OrderToDeliveryIn payload) {
+        var delivery = new Delivery(payload.orderId(),
+                new DeliveryClient(payload.clientId(), payload.clientName(), payload.address()),
+                new DeliveryProduct(payload.productName(), payload.productPrice()),
+                PENDING);
         deliveryRepository.save(delivery);
     }
+
+    /**
+     * This method is scheduled to run every 2 minutes, every day.
+     * {@code @Scheduled(cron = "0 0/2 * * * *")} configures this scheduling.
+     */
+     @Scheduled(cron = "0 0/2 * * * *")
+     @Async
+     public void processDeliveries() {
+         deliveryPersonService.findFirstByStatus(AVAILABLE).ifPresent(deliveryPerson -> {
+             deliveryRepository.findByStatus(PENDING).forEach(delivery -> {
+                 delivery.setStatus(IN_PROGRESS);
+                 delivery.setDeliveryPerson(deliveryPerson);
+                 deliveryPerson.setStatus(BUSY);
+                 deliveryRepository.save(delivery);
+                 deliveryPersonService.save(deliveryPerson);
+             });
+         });
+     }
+
+     public void updateStatusAndSendToOrder(UUID deliveryId, DeliveryStatus status) {
+         var delivery = deliveryRepository.findById(deliveryId)
+                 .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND));
+         delivery.setStatus(status);
+         deliveryPersonService.findById(delivery.getDeliveryPerson().getId()).ifPresent(deliveryPerson -> {
+             deliveryPerson.setStatus(AVAILABLE);
+             deliveryPersonService.save(deliveryPerson);
+         });
+         deliveryRepository.save(delivery);
+         deliveryEventGateway.sendOrderEvent(new DeliveryToOrderOut(delivery.getOrderId()));
+     }
 }
