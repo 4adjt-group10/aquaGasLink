@@ -5,35 +5,34 @@ import com.aquagaslink.delivery.controller.dto.RoutOutput;
 import com.aquagaslink.delivery.infrastructure.DeliveryRepository;
 import com.aquagaslink.delivery.model.*;
 import com.aquagaslink.delivery.queue.DeliveryEventGateway;
-import com.aquagaslink.delivery.queue.dto.OrderToDeliveryIn;
 import com.aquagaslink.delivery.queue.dto.DeliveryToOrderOut;
+import com.aquagaslink.delivery.queue.dto.OrderToDeliveryIn;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.aquagaslink.delivery.model.DeliveryPersonStatus.AVAILABLE;
 import static com.aquagaslink.delivery.model.DeliveryPersonStatus.BUSY;
-import static com.aquagaslink.delivery.model.DeliveryStatus.*;
+import static com.aquagaslink.delivery.model.DeliveryStatus.IN_PROGRESS;
+import static com.aquagaslink.delivery.model.DeliveryStatus.PENDING;
 
 @Service
 public class DeliveryService {
@@ -78,6 +77,9 @@ public class DeliveryService {
                 .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND));
         var clientAddress = delivery.getDeliveryClient().getAddress();
         String destination = generateLocationByAddress(clientAddress);
+        if(StringUtils.isBlank(delivery.getLatitude()) || StringUtils.isBlank(delivery.getLongitude())) {
+            throw new EntityNotFoundException("Rastreamento ainda não disponível");
+        }
         String origin = delivery.getLatitude().concat(",").concat(delivery.getLongitude());
         String url = buildDirectionsUrl(origin, destination);
         return callDirections(url);
