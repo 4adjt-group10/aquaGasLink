@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features="src/test/resources/features/order.feature",
         glue = "com.aquagaslink.order_management.bdd",
-        plugin = {"pretty", "html:target/cucumber-reports"}
+        plugin = {"html", "html:target/cucumber-reports"}
 )
 public class CucumberTest {
 }

@@ -4,6 +4,7 @@ import com.aquagaslink.order_management.controller.dto.OrderDto;
 import com.aquagaslink.order_management.controller.dto.OrderFormDto;
 import com.aquagaslink.order_management.model.ClientOrder;
 import com.aquagaslink.order_management.model.OrderStatus;
+import io.cucumber.java.sl.In;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -36,5 +37,15 @@ public class ClientOrderHelper {
 //        return new OrderFormDto("code",OrderStatus.CANCELLED,"code","nome",UUID.randomUUID());
 //
 //    }
+
+    public static OrderFormDto createOrderWithProduct(String productCode){
+        return new OrderFormDto(UUID.randomUUID(),1,new BigDecimal(10.0),UUID.randomUUID());
+
+    }
+
+    public static OrderFormDto createOrderData(Integer quantity, BigDecimal price, UUID clientId){
+        return new OrderFormDto(UUID.randomUUID(),1,new BigDecimal(10.0),clientId);
+
+    }
 
 }

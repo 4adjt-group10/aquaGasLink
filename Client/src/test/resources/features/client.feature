@@ -8,6 +8,14 @@ Feature: Client feature
       |12345628900|
       |12345638901|
 
+  Scenario Template:Register an existing client
+    Given that I create a client with "<cpf>"
+    Then the return must be "404"
+    Examples:
+      | cpf       |
+      |12345628900|
+      |12345638901|
+
 
   Scenario Template:Read a client by id
     Given that I create a client with "<cpf>"
