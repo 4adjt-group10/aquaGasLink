@@ -14,6 +14,8 @@ import static io.restassured.RestAssured.when;
 public class StepDefinitionDelivery {
 
     private Response response;
+    private Response responseUpdated;
+
 
     private DeliveryPersonHelper helper = new DeliveryPersonHelper();
 
@@ -22,6 +24,9 @@ public class StepDefinitionDelivery {
     private final String ENDPOINT_API_REGISTER = "http://localhost:8086/delivery-person/create";
     private final String ENDPOINT_API_DELETE = "http://localhost:8086/delivery-person/delete/";
     private final String ENDPOINT_API_FIND_BY_ID = "http://localhost:8086/delivery-person/{id}";
+    private final String ENDPOINT_API_LIST_ALL = "http://localhost:8086/delivery-person/get-all";
+    private final String ENDPOINT_API_READ_STATUS = "http://localhost:8086/delivery-person/get-all-by-status";
+    private final String ENDPOINT_API_UPDATE = "http://localhost:8086/delivery-person/get-all-by-status";
 
 
     @Given("that I create a delivery person with {string}, {string} and {string}")
@@ -55,6 +60,32 @@ public class StepDefinitionDelivery {
     @When("I read the delivery person by id")
     public void iReadTheDeliveryPersonById() {
         response = when().get(ENDPOINT_API_FIND_BY_ID, response.jsonPath().getString("id"));
+
+    }
+
+    @When("I read all deliveries person")
+    public void iReadAllDeliveriesPerson() {
+        response = when().get(ENDPOINT_API_LIST_ALL);
+    }
+
+
+    @When("I read all deliveries person by {string}")
+    public void iReadAllDeliveriesPersonBy(String status) {
+        response = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("status", status)
+                .when()
+                .get(ENDPOINT_API_READ_STATUS);
+
+    }
+
+    @When("I update the order")
+    public void iUpdateTheOrder() {
+        responseUpdated = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(response)
+                .when()
+                .post(ENDPOINT_API_UPDATE);
 
     }
 }
