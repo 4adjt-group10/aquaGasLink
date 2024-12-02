@@ -2,11 +2,13 @@ package com.aquagaslink.delivery.bdd;
 
 import com.aquagaslink.delivery.controller.dto.DeliveryPersonForm;
 import com.aquagaslink.delivery.helper.DeliveryPersonHelper;
+import com.aquagaslink.delivery.model.DeliveryPersonStatus;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import org.springframework.http.MediaType;
+import org.springframework.integration.util.UUIDConverter;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
@@ -26,12 +28,12 @@ public class StepDefinitionDelivery {
     private final String ENDPOINT_API_FIND_BY_ID = "http://localhost:8086/delivery-person/{id}";
     private final String ENDPOINT_API_LIST_ALL = "http://localhost:8086/delivery-person/get-all";
     private final String ENDPOINT_API_READ_STATUS = "http://localhost:8086/delivery-person/get-all-by-status";
-    private final String ENDPOINT_API_UPDATE = "http://localhost:8086/delivery-person/get-all-by-status";
+    private final String ENDPOINT_API_UPDATE_DELIVERY = "http://localhost:8086/delivery/update-status/{deliveryId}";
 
 
-    @Given("that I create a delivery person with {string}, {string} and {string}")
-    public void thatICreateADeliveryPersonWithAnd(String name, String email, String phone) {
-        var deliveryCreated = helper.createDeliveryPerson(name, email, phone);
+    @Given("that I create a delivery person with {string}, {string}, {string} and {string}")
+    public void thatICreateADeliveryPersonWithAnd(String name, String email, String phone, String plate) {
+        var deliveryCreated = helper.createDeliveryPerson(name, email, phone, plate);
         deliveryValid = deliveryCreated;
         response = given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -79,13 +81,20 @@ public class StepDefinitionDelivery {
 
     }
 
-    @When("I update the order")
-    public void iUpdateTheOrder() {
-        responseUpdated = given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(response)
-                .when()
-                .post(ENDPOINT_API_UPDATE);
 
+    @When("I update the delivery {string}")
+    public void iUpdateTheDelivery(String status) {
+        //var delivery = response.jsonPath().getString("id");
+//        var orderUpdated = helper.createOrderData(quantity,price, UUIDConverter.getUUID(response.jsonPath().getString("clientId")));
+//        orderValid = orderUpdated;
+        response = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("status",status)
+                .when()
+                .put(ENDPOINT_API_UPDATE_DELIVERY, response.jsonPath().getString("id"));
+    }
+
+    @When("I get the tracking by clientId")
+    public void iGetTheTrackingByClientId() {
     }
 }
