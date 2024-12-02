@@ -34,7 +34,7 @@ Este microserviço é responsável por gerenciar as informações dos clientes, 
 1. Certifique-se de ter o Java, Maven e Docker instalados em sua máquina.
 2. Navegue até o diretório raiz do projeto.
 3. Execute o comando `docker-compose up` para iniciar os contêineres do microserviço e suas dependências.
-4. O microserviço estará disponível em `http://localhost:8082`.
+4. Para visualizar a documentação da API, acesse: `http://localhost:8082/swagger-ui/index.html`.
 
 # Endpoints
 - **POST `/client`**: Cria um novo cliente.
