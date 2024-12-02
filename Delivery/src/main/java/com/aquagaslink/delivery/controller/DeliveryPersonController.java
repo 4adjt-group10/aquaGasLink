@@ -2,7 +2,6 @@ package com.aquagaslink.delivery.controller;
 
 import com.aquagaslink.delivery.controller.dto.DeliveryPersonDto;
 import com.aquagaslink.delivery.controller.dto.DeliveryPersonForm;
-import com.aquagaslink.delivery.model.DeliveryPerson;
 import com.aquagaslink.delivery.model.DeliveryPersonStatus;
 import com.aquagaslink.delivery.service.DeliveryPersonService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
-import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
 @RequestMapping("/delivery-person")
@@ -35,16 +33,19 @@ public class DeliveryPersonController {
     }
 
     @PostMapping("/create")
+    @Operation(summary = "Create new delivery person")
     public ResponseEntity<DeliveryPersonDto> create(@Valid @RequestBody DeliveryPersonForm deliveryPerson) {
         return ResponseEntity.ok(deliveryPersonService.create(deliveryPerson));
     }
 
     @PostMapping("/update")
+    @Operation(summary = "Update delivery person")
     public ResponseEntity<DeliveryPersonDto> update(@Valid @RequestBody DeliveryPersonForm deliveryPerson) {
         return ResponseEntity.ok(deliveryPersonService.update(deliveryPerson));
     }
 
     @PostMapping("/delete/{id}")
+    @Operation(summary = "Delete delivery person by id")
     public ResponseEntity<Void> delete(@PathVariable("id") UUID id) {
         deliveryPersonService.delete(id);
         return ResponseEntity.ok().build();
@@ -64,6 +65,7 @@ public class DeliveryPersonController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get delivery person by id")
     public ResponseEntity<DeliveryPersonDto> getDeliveryPersonById(@PathVariable UUID id) {
         return ResponseEntity.ok(deliveryPersonService.getDeliveryPersonById(id));
     }

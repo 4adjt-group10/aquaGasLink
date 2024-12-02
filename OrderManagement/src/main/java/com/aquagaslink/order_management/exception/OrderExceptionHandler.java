@@ -1,4 +1,4 @@
-package com.aquagaslink.order_management;
+package com.aquagaslink.order_management.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
