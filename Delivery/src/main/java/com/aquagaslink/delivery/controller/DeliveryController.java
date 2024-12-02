@@ -26,9 +26,9 @@ public class DeliveryController {
     }
 
     @PutMapping("/finish/{deliveryId}")
-    @Operation(summary = "Finish delivery", description = "Update delivery status (to delivered or cancelled) and send an order event")
+    @Operation(summary = "Finish delivery", description = "Update delivery status and send an order event")
     public void finishDelivery(@PathVariable UUID deliveryId, @RequestParam DeliveryFinishStatus status) {
-        deliveryService.finishDeliveryAndSendToOrder(deliveryId, status.toDeliveryStatus());
+        deliveryService.finishDeliveryAndSendToOrder(deliveryId, status);
     }
 
     @GetMapping("/track-by-client/{clientId}")
