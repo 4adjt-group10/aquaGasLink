@@ -1,6 +1,5 @@
 package com.aquagaslink.order_management.queue.consumer;
 
-import com.aquagaslink.order_management.model.OrderStatus;
 import com.aquagaslink.order_management.queue.dto.delivery.DeliveryToOrderIn;
 import com.aquagaslink.order_management.service.OrderService;
 import com.rabbitmq.client.Channel;
@@ -36,7 +35,7 @@ public class DeliveryEventListenerConfig {
             Channel channel = (Channel) headers.get("amqp_channel");
             try {
                 // Processamento da mensagem
-                orderService.updateOrderStatus(payload.orderId(), OrderStatus.COMPLETED);
+                orderService.updateOrderStatus(payload.orderId(), payload.status());
                 channel.basicAck(deliveryTag, false);
             } catch (Exception e) {
                 // Em caso de erro, nack a mensagem para DLQ

@@ -58,6 +58,7 @@ public class OrderService {
     public OrderDto updateOrderStatus(UUID id, OrderStatus status) {
         ClientOrder clientOrder = clientOrderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND));
         clientOrder.setStatus(status);
+        clientOrder.setUpdatedAt();
         return new OrderDto(clientOrderRepository.save(clientOrder));
     }
 

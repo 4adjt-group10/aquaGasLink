@@ -210,15 +210,15 @@ public class DeliveryService {
          });
      }
 
-     public void updateStatusAndSendToOrder(UUID deliveryId, DeliveryStatus status) {
+     public void finishDeliveryAndSendToOrder(UUID deliveryId, DeliveryFinishStatus status) {
          var delivery = deliveryRepository.findById(deliveryId)
                  .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND));
-         delivery.setStatus(status);
+         delivery.setStatus(status.toDeliveryStatus());
          deliveryPersonService.findById(delivery.getDeliveryPerson().getId()).ifPresent(deliveryPerson -> {
              deliveryPerson.setStatus(AVAILABLE);
              deliveryPersonService.save(deliveryPerson);
          });
          deliveryRepository.save(delivery);
-         deliveryEventGateway.sendOrderEvent(new DeliveryToOrderOut(delivery.getOrderId()));
+         deliveryEventGateway.sendOrderEvent(new DeliveryToOrderOut(delivery.getOrderId(), status));
      }
 }
