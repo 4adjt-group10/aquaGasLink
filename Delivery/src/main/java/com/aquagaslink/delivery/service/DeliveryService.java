@@ -210,7 +210,7 @@ public class DeliveryService {
          });
      }
 
-     public void updateStatusAndSendToOrder(UUID deliveryId, DeliveryStatus status) {
+     public void finishDeliveryAndSendToOrder(UUID deliveryId, DeliveryStatus status) {
          var delivery = deliveryRepository.findById(deliveryId)
                  .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND));
          delivery.setStatus(status);

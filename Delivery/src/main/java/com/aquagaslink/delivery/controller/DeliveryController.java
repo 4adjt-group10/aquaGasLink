@@ -2,7 +2,7 @@ package com.aquagaslink.delivery.controller;
 
 import com.aquagaslink.delivery.controller.dto.DriverLocationForm;
 import com.aquagaslink.delivery.controller.dto.RoutOutput;
-import com.aquagaslink.delivery.model.DeliveryStatus;
+import com.aquagaslink.delivery.model.DeliveryFinishStatus;
 import com.aquagaslink.delivery.service.DeliveryService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
@@ -25,10 +25,10 @@ public class DeliveryController {
         return deliveryService.tracking(orderId, driverLocationForm);
     }
 
-    @PutMapping("/update-status/{deliveryId}")
-    @Operation(summary = "Update delivery status", description = "Commonly used to finalize delivery (set do delivered)")
-    public void updateStatus(@PathVariable UUID deliveryId, @RequestParam DeliveryStatus status) {
-        deliveryService.updateStatusAndSendToOrder(deliveryId, status);
+    @PutMapping("/finish/{deliveryId}")
+    @Operation(summary = "Finish delivery", description = "Update delivery status (to delivered or cancelled) and send an order event")
+    public void finishDelivery(@PathVariable UUID deliveryId, @RequestParam DeliveryFinishStatus status) {
+        deliveryService.finishDeliveryAndSendToOrder(deliveryId, status.toDeliveryStatus());
     }
 
     @GetMapping("/track-by-client/{clientId}")
