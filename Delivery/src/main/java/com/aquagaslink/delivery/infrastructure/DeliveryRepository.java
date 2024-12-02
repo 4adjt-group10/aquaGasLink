@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,7 +13,7 @@ import java.util.UUID;
 public interface DeliveryRepository extends JpaRepository<Delivery, UUID> {
     Optional<Delivery> findByOrderId(UUID orderId);
 
-    List<Delivery> findByStatus(DeliveryStatus deliveryStatus);
+    Optional<Delivery> findFirstByStatus(DeliveryStatus deliveryStatus);
 
     @Query(value = """
         SELECT d FROM Delivery d

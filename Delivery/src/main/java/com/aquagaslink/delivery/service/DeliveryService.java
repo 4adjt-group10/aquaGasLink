@@ -193,14 +193,14 @@ public class DeliveryService {
     }
 
     /**
-     * This method is scheduled to run every 2 minutes, every day.
-     * {@code @Scheduled(cron = "0 0/2 * * * *")} configures this scheduling.
+     * This method is scheduled to run every 1 minute, every day.
+     * {@code @Scheduled(cron = "0 0/1 * * * *")} configures this scheduling.
      */
-     @Scheduled(cron = "0 0/2 * * * *")
+     @Scheduled(cron = "0 0/1 * * * *")
      @Async
      public void processDeliveries() {
          deliveryPersonService.findFirstByStatus(AVAILABLE).ifPresent(deliveryPerson -> {
-             deliveryRepository.findByStatus(PENDING).forEach(delivery -> {
+             deliveryRepository.findFirstByStatus(PENDING).ifPresent(delivery -> {
                  delivery.setStatus(IN_PROGRESS);
                  delivery.setDeliveryPerson(deliveryPerson);
                  deliveryPerson.setStatus(BUSY);
