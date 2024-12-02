@@ -45,18 +45,34 @@ Feature: Delivery feature
       |test  |test@gmail.com|119282737|OFF_DUTY |ABS1306|
 
 
-  Scenario Template: Update delivery status
+  Scenario Template: Update delivery status and send an order event
     Given that I create a delivery person with "<name>", "<email>", "<phone>" and "<plate>"
     When I update the delivery "<status>"
     Then the return must be "404"
     Examples:
-      | name | email        | phone   | plate |status     |
-      |test  |test@gmail.com|119282737|CBS1306|IN_PROGRESS|
+      | name | email        | phone   | plate |status   |
+      |test  |test@gmail.com|119282737|CBS1306|COMPLETED|
 
-#  Scenario Template: Get tracking clientId
-#    Given that I create a delivery person with "<name>", "<email>", "<phone>" and "<plate>"
-#    When I get the tracking by clientId
-#    Then the return must be "200"
-#    Examples:
-#      | name | email        | phone   | plate |
-#      |test  |test@gmail.com|119282737|ABS1306|
+  Scenario Template: Update delivery
+    Given that I create a delivery person with "<name>", "<email>", "<phone>" and "<plate>"
+    When I update the delivery with a "<newName>" and "<newPhone>"
+    Then the return must be "200"
+    Examples:
+      | name  | email         | phone   | plate |newName|newPhone|
+      |test1  |test1@gmail.com|119282737|CBS1306|test2  |9827355 |
+
+  Scenario Template: Get tracking clientId
+    Given that I create a delivery person with "<name>", "<email>", "<phone>" and "<plate>"
+    When I get the tracking by "<clientId>"
+    Then the return must be "404"
+    Examples:
+      | name | email        | phone   | plate |clientId                            |
+      |test  |test@gmail.com|119282737|ABS1306|c47ed155-df42-48ec-8b1d-597e71997b9a|
+
+  Scenario Template: Tracking delivery by order id
+    Given that I create a delivery person with "<name>", "<email>", "<phone>" and "<plate>"
+    When I tracking by "<orderId>" id
+    Then the return must be "404"
+    Examples:
+      | name | email        | phone   | plate |orderId                             |
+      |test  |test@gmail.com|119282737|ABS1306|31e52a0d-b495-4048-aaaa-2b0d24df96b6|

@@ -10,6 +10,8 @@ import io.restassured.response.Response;
 import org.springframework.http.MediaType;
 import org.springframework.integration.util.UUIDConverter;
 
+import static com.aquagaslink.delivery.model.DeliveryPersonStatus.AVAILABLE;
+import static com.aquagaslink.delivery.model.DeliveryPersonStatus.BUSY;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 
@@ -28,7 +30,10 @@ public class StepDefinitionDelivery {
     private final String ENDPOINT_API_FIND_BY_ID = "http://localhost:8086/delivery-person/{id}";
     private final String ENDPOINT_API_LIST_ALL = "http://localhost:8086/delivery-person/get-all";
     private final String ENDPOINT_API_READ_STATUS = "http://localhost:8086/delivery-person/get-all-by-status";
-    private final String ENDPOINT_API_UPDATE_DELIVERY = "http://localhost:8086/delivery/update-status/{deliveryId}";
+    private final String ENDPOINT_API_UPDATE_DELIVERY_STATAUS = "http://localhost:8086/delivery/finish/{deliveryId}";
+    private final String ENDPOINT_API_UPDATE_DELIVERY = "http://localhost:8086/delivery-person/update";
+    private final String ENDPOINT_API_TRACKING_CLIENTID = "http://localhost:8086/delivery/track-by-client/{clientId}";
+    private final String ENDPOINT_API_TRACKING = "http://localhost:8086/delivery/tracking/{orderId}";
 
 
     @Given("that I create a delivery person with {string}, {string}, {string} and {string}")
@@ -91,10 +96,39 @@ public class StepDefinitionDelivery {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .param("status",status)
                 .when()
-                .put(ENDPOINT_API_UPDATE_DELIVERY, response.jsonPath().getString("id"));
+                .put(ENDPOINT_API_UPDATE_DELIVERY_STATAUS, response.jsonPath().getString("id"));
     }
 
     @When("I get the tracking by clientId")
     public void iGetTheTrackingByClientId() {
+    }
+
+    @When("I update the delivery with a {string} and {string}")
+    public void iUpdateTheDeliveryWithAAnd(String name, String phone) {
+        var deliveryUpdated = helper.createDeliveryPersonStatus(name, response.jsonPath().getString("email"), phone, response.jsonPath().getString("vehiclePlate"), AVAILABLE);
+        response = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(deliveryUpdated)
+                .when()
+                .post(ENDPOINT_API_UPDATE_DELIVERY);
+
+    }
+
+
+    @When("I get the tracking by {string}")
+    public void iGetTheTrackingBy(String clientId) {
+        response = when().get(ENDPOINT_API_TRACKING_CLIENTID, clientId);
+
+    }
+
+
+    @When("I tracking by {string} id")
+    public void iTrackingById(String orderId) {
+        var driverLocation = helper.createDriverLocation();
+        response = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(driverLocation)
+                .when()
+                .post(ENDPOINT_API_TRACKING,orderId);
     }
 }
