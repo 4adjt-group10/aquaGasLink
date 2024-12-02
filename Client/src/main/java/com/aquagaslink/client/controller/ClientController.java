@@ -2,10 +2,8 @@ package com.aquagaslink.client.controller;
 
 import com.aquagaslink.client.controller.clientDTO.ClientDTO;
 import com.aquagaslink.client.controller.clientDTO.ClientDTOForm;
-import com.aquagaslink.client.queue.ClientEventGateway;
 import com.aquagaslink.client.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +12,14 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/client")
+@RequestMapping("/client")
 public class ClientController {
 
-    @Autowired
-    private ClientService clientService;
+    private final ClientService clientService;
 
-    @Autowired
-    ClientEventGateway clientEventGateway;
+    public ClientController(ClientService clientService) {
+        this.clientService = clientService;
+    }
 
     @PostMapping
     @Operation(summary = "Create new client")
