@@ -1,7 +1,7 @@
 services:
 
   order-db:
-    container_name: order-postgres
+    container_name: postgres-order
     image: postgres:latest
     restart: unless-stopped
     volumes:
@@ -17,7 +17,7 @@ services:
       - order-network
 
   order-app:
-    container_name: order-java
+    container_name: java-order
     image: maven:3.8.4-openjdk-17
     volumes:
       - ./:/app

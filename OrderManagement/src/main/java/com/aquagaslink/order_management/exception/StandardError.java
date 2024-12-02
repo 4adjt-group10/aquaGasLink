@@ -1,4 +1,4 @@
-package com.aquagaslink.order_management;
+package com.aquagaslink.order_management.exception;
 
 import java.time.Instant;
 
