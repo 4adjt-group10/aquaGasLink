@@ -4,11 +4,20 @@ import com.aquagaslink.order_management.controller.dto.OrderDto;
 import com.aquagaslink.order_management.controller.dto.OrderFormDto;
 import com.aquagaslink.order_management.helper.ClientOrderHelper;
 import com.aquagaslink.order_management.infrastructure.ClientOrderRepository;
+import com.aquagaslink.order_management.model.ClientAddress;
 import com.aquagaslink.order_management.model.ClientOrder;
 import com.aquagaslink.order_management.model.OrderStatus;
 import com.aquagaslink.order_management.queue.OrderEventGateway;
 import com.aquagaslink.order_management.queue.dto.client.ClientToOrderIn;
+import com.aquagaslink.order_management.queue.dto.client.OrderToClientOut;
 import com.aquagaslink.order_management.queue.dto.product.OrderToProductOut;
+import com.aquagaslink.order_management.queue.dto.product.ProductToOrderIn;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -22,6 +31,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,40 +49,32 @@ public class OrderServiceTest {
 
     private OrderService service;
 
-    private ClientOrderHelper helper;
-
+    @Mock
     private OrderEventGateway orderEventGateway;
 
     AutoCloseable mock;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         mock = MockitoAnnotations.openMocks(this);
-        service = new OrderService(clientOrderRepository, null);
-    };
+        service = new OrderService(clientOrderRepository, orderEventGateway);
+    }
 
     @AfterEach
     void tearDown() throws Exception {
         mock.close();
     }
 
-//    @Test
-//    void shouldCreateOrder(){
-//        var code = "code";
-//        var orderModel = helper.createClientOrder(code);
-//        var order = helper.createOrderFormDto(code);
-//
-//        when(clientOrderRepository.save(any(ClientOrder.class)))
-//                .thenReturn(orderModel);
-//
-//        var orderRead = service.createOrder(order);
-//
-//        assertThat(orderRead.clientName()).isEqualTo(order.clientName());
-//        assertThat(orderRead.productCode()).isEqualTo(order.productCode());
-//        assertThat(orderRead.status()).isEqualTo(order.status());
-//        verify(clientOrderRepository, times(1)).save(any(ClientOrder.class));
-//
-//    }
+    @Test
+    void testCreateOrder() {
+        OrderFormDto formDto = new OrderFormDto(UUID.randomUUID(), 5, new BigDecimal("10.0"), UUID.randomUUID()); // Exemplo de dados
+
+        ClientOrder clientOrder = new ClientOrder(formDto);
+        when(clientOrderRepository.save(any(ClientOrder.class))).thenReturn(clientOrder);
+        service.createOrder(formDto);
+        verify(clientOrderRepository, times(1)).save(any(ClientOrder.class));
+        verify(orderEventGateway, times(1)).sendClientEvent(any(OrderToClientOut.class));
+    }
 
     @Test
     void shouldFindOrderById() {
@@ -139,24 +141,108 @@ public class OrderServiceTest {
         verify(clientOrder).setStatus(newStatus);
     }
 
-    //todo - testando o metodo de validacao de cliente
-//    @Test
-//    void shouldValidateClientWithError() {
-//        UUID orderId = UUID.randomUUID();
-//        UUID id = UUID.randomUUID();
-//        ClientToOrderIn payload = new ClientToOrderIn(id, orderId, "Client name", "Client phone", null, true, "Client error");
-//        ClientOrder clientOrder = mock(ClientOrder.class);
-//
-//        when(clientOrderRepository.findById(orderId)).thenReturn(Optional.of(clientOrder));
-//
-//        service.validateClient(payload);
-//
-//        verify(clientOrderRepository, times(1)).findById(orderId);
-//        verify(clientOrder, times(1)).setHasClientError(true);
-//        verify(clientOrder, times(1)).setObservation(anyString());
-//        verify(clientOrder, times(1)).setStatus(OrderStatus.ERROR);
-//        verify(clientOrder, times(1)).setUpdatedAt();
-//        verify(clientOrderRepository, times(1)).saveAndFlush(clientOrder);
-//    }
+    @Test
+    void shouldValidateClientWithError() {
+        UUID orderId = UUID.randomUUID();
+        UUID id = UUID.randomUUID();
+        ClientToOrderIn payload = new ClientToOrderIn(id, orderId, "Client name", "Client phone", null, true, "Client error");
+
+        ClientOrder clientOrder = new ClientOrder(UUID.randomUUID(),
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                OrderStatus.COMPLETED,
+                UUID.randomUUID(),
+                null,
+                UUID.randomUUID(),
+                5,
+                new BigDecimal("10.0"),
+                true,
+                true,
+                "teste");
+
+        when(clientOrderRepository.findById(orderId)).thenReturn(Optional.of(clientOrder));
+
+        service.validateClient(payload);
+
+        verify(clientOrderRepository, times(1)).findById(orderId);
+    }
+
+
+    @Test
+    void shouldValidateClientWithOutError() {
+        UUID orderId = UUID.randomUUID();
+        UUID id = UUID.randomUUID();
+        ClientToOrderIn payload = new ClientToOrderIn(id, orderId, "Client name", "Client phone", null, false, "Client error");
+
+        ClientOrder clientOrder = new ClientOrder(UUID.randomUUID(),
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                OrderStatus.COMPLETED,
+                UUID.randomUUID(),
+                null,
+                UUID.randomUUID(),
+                5,
+                new BigDecimal("10.0"),
+                false,
+                false,
+                "teste");
+
+        when(clientOrderRepository.findById(orderId)).thenReturn(Optional.of(clientOrder));
+
+        service.validateClient(payload);
+
+        verify(clientOrderRepository, times(1)).findById(orderId);
+    }
+
+
+    @Test
+    void testValidateProductWithError() {
+        ProductToOrderIn payload = new ProductToOrderIn(UUID.randomUUID(), UUID.randomUUID(),"name client", "Product error", 5, new BigDecimal("10.0"),true, "Product error");
+
+        ClientOrder clientOrder = new ClientOrder(payload.orderId(),
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                OrderStatus.COMPLETED,
+                UUID.randomUUID(),
+                null,
+                UUID.randomUUID(),
+                5,
+                new BigDecimal("10.0"),
+                false,
+                false,
+                "Initial observation. ");
+        when(clientOrderRepository.findById(any(UUID.class))).thenReturn(Optional.of(clientOrder));
+        service.validateProduct(payload);
+        verify(clientOrderRepository, times(1)).saveAndFlush(any(ClientOrder.class));
+    }
+
+    @Test
+    void testValidateProductWithoutError() {
+        ProductToOrderIn payload = new ProductToOrderIn(UUID.randomUUID(), UUID.randomUUID(),"name client", "Product error", 5, new BigDecimal("10.0"),false, "Product error");
+        ClientOrder clientOrder = new ClientOrder(payload.orderId(),
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                OrderStatus.COMPLETED,
+                UUID.randomUUID(),
+                null,
+                UUID.randomUUID(),
+                5,
+                new BigDecimal("10.0"),
+                false,
+                false,
+                "Initial observation. ");
+
+        when(clientOrderRepository.findById(any(UUID.class))).thenReturn(Optional.of(clientOrder));
+        service.validateProduct(payload);
+        Assertions.assertEquals(OrderStatus.IN_PROGRESS, clientOrder.getStatus()); // ou qualquer status que se aplique
+    }
+
+    @Test
+    void testValidateProductOrderNotFound() {
+        ProductToOrderIn payload = new ProductToOrderIn(UUID.randomUUID(), UUID.randomUUID(),"name client", "Product error", 5, new BigDecimal("10.0"),false, "Product error");
+        when(clientOrderRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        service.validateProduct(payload);
+        verify(clientOrderRepository, never()).saveAndFlush(any(ClientOrder.class));
+    }
 
 }

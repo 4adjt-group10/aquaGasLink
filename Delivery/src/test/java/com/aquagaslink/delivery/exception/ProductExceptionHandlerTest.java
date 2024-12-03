@@ -1,4 +1,4 @@
-package com.aquagaslink.product.exception;
+package com.aquagaslink.delivery.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,11 +16,11 @@ import java.time.Instant;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-public class ProductExceptionHandlerTest {
+class ProductExceptionHandlerTest {
 
     @InjectMocks
     private ProductExceptionHandler handler;

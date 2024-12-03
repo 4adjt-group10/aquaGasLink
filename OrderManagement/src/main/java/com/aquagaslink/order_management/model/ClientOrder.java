@@ -51,6 +51,21 @@ public class ClientOrder {
         this.observation = StringUtils.EMPTY;
     }
 
+    public ClientOrder(UUID id, LocalDateTime createdAt, @Nullable LocalDateTime updatedAt, OrderStatus status, UUID clientId, ClientAddress clientAddress, UUID productId, Integer quantity, BigDecimal price, Boolean hasClientError, Boolean hasProductError, String observation) {
+        this.id = id;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.status = status;
+        this.clientId = clientId;
+        this.clientAddress = clientAddress;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.price = price;
+        this.hasClientError = hasClientError;
+        this.hasProductError = hasProductError;
+        this.observation = observation;
+    }
+
     public ClientOrder(OrderFormDto formDto) {
         this(LocalDateTime.now(),
                 null,
