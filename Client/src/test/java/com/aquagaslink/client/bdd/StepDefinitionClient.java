@@ -19,11 +19,11 @@ public class StepDefinitionClient {
 
     private ClientDTOForm clientValid;
 
-    private final String ENDPOINT_API_REGISTER = "http://localhost:8082/api/client";
-    private final String ENDPOINT_API_FIND_BY_ID = "http://localhost:8082/api/client/{id}";
-    private final String ENDPOINT_API_LIST_ALL = "http://localhost:8082/api/client/all";
-    private final String ENDPOINT_API_DELETE = "http://localhost:8082/api/client/{id}";
-    private final String ENDPOINT_API_UPDATE = "http://localhost:8082/api/client/{id}";
+    private final String ENDPOINT_API_REGISTER = "http://localhost:8082/client";
+    private final String ENDPOINT_API_FIND_BY_ID = "http://localhost:8082/client/{id}";
+    private final String ENDPOINT_API_LIST_ALL = "http://localhost:8082/client/all";
+    private final String ENDPOINT_API_DELETE = "http://localhost:8082/client/{id}";
+    private final String ENDPOINT_API_UPDATE = "http://localhost:8082/client/{id}";
 
 
     @Given("that I create a client with {string}")
