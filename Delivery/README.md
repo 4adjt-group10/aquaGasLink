@@ -49,3 +49,4 @@ Além disso, atribui entregadores a entregas específicas.
 - **POST `/delivery/tracking/{orderId}`**: Rastreia a entrega por ID do pedido.
 - **PUT `/delivery/finish/{deliveryId}`**: Finaliza a entrega e atualiza o status.
 - **GET `/delivery/track-by-client/{clientId}`**: Rastreia a entrega por ID do cliente.
+- **GET `/delivery/{deliveryPersonId}`**: Obtem o id de delivery para o entregador responsável pela entrega. 
