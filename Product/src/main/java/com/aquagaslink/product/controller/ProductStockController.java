@@ -14,10 +14,7 @@ import java.util.UUID;
 @RequestMapping("/product")
 public class ProductStockController {
 
-
     final ProductService productService;
-
-
 
     public ProductStockController(ProductService productService) {
         this.productService = productService;

@@ -25,7 +25,7 @@ services:
     command: bash -c "mvn clean install && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar target/OrderManagement.jar"
     environment:
       - TZ=America/Sao_Paulo
-      - SPRING_RABBITMQ_HOST=rabbitmq  # Aqui estamos utilizando o nome do contêiner RabbitMQ
+      - SPRING_RABBITMQ_HOST=rabbitmq
     ports:
       - "8080:8080"
       - "5005:5005"
