@@ -10,5 +10,6 @@ import org.junit.runner.RunWith;
         glue = "com.aquagaslink.delivery.bdd",
         plugin = {"html", "html:target/cucumber-reports"}
 )
+
 public class CucumberTest {
 }
