@@ -41,6 +41,8 @@ Utilizando uma arquitetura de microsserviços, o AquaGasLink é composto por qua
 1. Certifique-se de ter o Java, Maven e Docker Compose instalados em sua máquina.
 2. Navegue até o diretório raiz do projeto.
 3. Execute o comando `docker-compose -f base-compose.yaml up` para iniciar os contêineres dos microserviços, bancos de dados e messageria.
+> [!TIP]
+> Para manter o funcionamento do terminal, pode adicionar o comando `-d`, utilizando dessa forma: `docker-compose -f base-compose.yaml up -d`
 4. Os serviços estarão disponíveis em:
    - Client: `http://localhost:8082/swagger-ui/index.html`.
    - Product: `http://localhost:8081/swagger-ui/index.html`.
@@ -60,3 +62,4 @@ Utilizando uma arquitetura de microsserviços, o AquaGasLink é composto por qua
    - 6.9 Após a entrega ser realizada, o entregador irá finalizar a entrega por meio do endpoint ```PUT /delivery/finish/{deliveryId}```. Com isso o status da entrega irá mudar para `DELIVERED` e o status do entregador mudará para `AVAILABLE`. Isso irá disparar um evento para o serviço de *OrderManagement* que irá atualizar o status do pedido para `COMPLETED`. Caso o entregador não consiga realizar a entrega, o status da entrega será alterado para `CANCELLED`, o status do entregador mudará para `AVAILABLE` e o evento disparado irá mudar o status de Order para `CANCELLED`.
 > [!TIP] 
 > Para auxiliar na obtenção de latitude e longitude, utilize [Coordenadas-gps](https://www.coordenadas-gps.net/) ou o [Google Maps](https://www.google.com/maps).
+7. Após testar, poderá derrubar todos os serviços ativos com o comando: `docker-compose -f base-compose.yaml down`, ou caso não possa inserir o comando no terminal, utilize o atalho `ctrl + c` ou `ctrl + shift + c`
