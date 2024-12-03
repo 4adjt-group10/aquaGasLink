@@ -37,8 +37,9 @@ Este microserviço é responsável por gerenciar as informações de produtos. P
 > visto que para o correto funcionamento da aplicação é necessário a comunicação via messageria entre os serviços.
 1. Certifique-se de ter o Java, Maven e Docker instalados em sua máquina.
 2. Navegue até o diretório raiz do projeto.
-3. Execute o comando `docker-compose up` para iniciar os contêineres do microserviço e suas dependências.
-4. Para visualizar a documentação da API, acesse: `http://localhost:8081/swagger-ui/index.html`.
+3. Suba o serviço `rabbitmq`, presente no arquivo `base-compose.yml`. Ele é necessário para o correto funcionamento do serviço.
+4. Execute o comando `docker-compose up` para iniciar os contêineres do microserviço e suas dependências.
+5. Para visualizar a documentação da API, acesse: `http://localhost:8081/swagger-ui/index.html`.
 
 # Endpoints
 #### Gerenciamento de produtos
