@@ -27,6 +27,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.aquagaslink.delivery.model.DeliveryPersonStatus.AVAILABLE;
@@ -38,6 +39,8 @@ import static com.aquagaslink.delivery.model.DeliveryStatus.PENDING;
 public class DeliveryService {
     private static final Logger logger = LoggerFactory.getLogger(DeliveryService.class);
     private static final String ORDER_NOT_FOUND = "Order not found";
+    private static final String DELIVERY_NOT_FOUND = "delivery not found";
+
     private static final String DURATION = "duration";
     private static final String DISTANCE = "distance";
 
@@ -85,7 +88,7 @@ public class DeliveryService {
         return callDirections(url);
     }
 
-    private RoutOutput routeByAddress(ClientAddress address, String orderId) {
+    private RoutOutput routeByAddress(Address address, String orderId) {
         var delivery = getDelivery(orderId);
         var clientAddress = delivery.getDeliveryClient().getAddress();
         String destination = generateLocationByAddress(clientAddress);
@@ -176,11 +179,18 @@ public class DeliveryService {
         return new RoutOutput(routes);
     }
 
+    private @NotNull String generateLocationByAddress(Address address) {
+        return address.getStreet() + " " +
+                address.getNumber() + " " +
+                address.getCity() + " " +
+                address.getState() + " " +
+                address.getCountry();
+    }
     private @NotNull String generateLocationByAddress(ClientAddress address) {
         return address.getStreet() + " " +
                 address.getClientNumber() + " " +
                 address.getClientCity() + " " +
-                address.getClientState() + " " +
+                address.getClientState()+ " " +
                 address.getClientCountry();
     }
 
@@ -221,4 +231,10 @@ public class DeliveryService {
          deliveryRepository.save(delivery);
          deliveryEventGateway.sendOrderEvent(new DeliveryToOrderOut(delivery.getOrderId(), status));
      }
+
+    public String getDeliveryId(UUID deliveryPersonId) {
+        Delivery byDeliveryPersonId = deliveryRepository.findByDeliveryPerson_IdAndStatus(deliveryPersonId, IN_PROGRESS)
+                .orElseThrow(() -> new EntityNotFoundException(DELIVERY_NOT_FOUND));
+        return byDeliveryPersonId.getId().toString();
+    }
 }

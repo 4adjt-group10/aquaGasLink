@@ -2,6 +2,7 @@ package com.aquagaslink.delivery.helper;
 
 import com.aquagaslink.delivery.controller.dto.DeliveryPersonForm;
 import com.aquagaslink.delivery.controller.dto.DriverLocationForm;
+import com.aquagaslink.delivery.model.Address;
 import com.aquagaslink.delivery.model.ClientAddress;
 import com.aquagaslink.delivery.model.DeliveryPersonStatus;
 
@@ -17,7 +18,7 @@ public class DeliveryPersonHelper {
 
     public static DriverLocationForm createDriverLocation(){
         return new DriverLocationForm("45'","45'",
-                new ClientAddress("123456-12","Logradouro","1192736454","São Paulo", "SP", "12","Brazil" ));
+                new Address("123456-12",455,"1192736454","São Paulo", "SP", "12","Brazil" ));
     }
 
 

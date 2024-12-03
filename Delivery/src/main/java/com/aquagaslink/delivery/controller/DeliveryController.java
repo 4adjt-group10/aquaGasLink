@@ -36,4 +36,10 @@ public class DeliveryController {
     public RoutOutput trackByClient(@PathVariable UUID clientId) {
         return deliveryService.getTrackingByClient(clientId);
     }
+
+    @GetMapping("/delivery/{deliveryPersonId}")
+    @Operation(summary = "rescue delivery id by delivery person id")
+    public String getDeliveryId(@PathVariable UUID deliveryPersonId) {
+        return deliveryService.getDeliveryId(deliveryPersonId);
+    }
 }

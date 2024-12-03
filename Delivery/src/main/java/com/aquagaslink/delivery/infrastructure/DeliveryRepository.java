@@ -21,4 +21,6 @@ public interface DeliveryRepository extends JpaRepository<Delivery, UUID> {
            AND d.status = :deliveryStatus
     """)
     Optional<Delivery> findByClientIdAndStatus(String clientId, DeliveryStatus deliveryStatus);
+
+    Optional<Delivery> findByDeliveryPerson_IdAndStatus(UUID deliveryPersonId, DeliveryStatus inProgress);
 }

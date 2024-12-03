@@ -90,7 +90,7 @@ class DeliveryServiceTest {
     @Test
     void testTracking_withAddress() {
         String orderId = UUID.randomUUID().toString();
-        ClientAddress address = new ClientAddress("10001", "5th Ave", "1234567890", "New York", "NY", "1", "USA");
+        Address address = new Address("10001", 455, "1234567890", "New York", "NY", "1", "USA");
         DriverLocationForm form = new DriverLocationForm(null, null, address);
         DeliveryPerson deliveryPerson1 = new DeliveryPerson("name entregador", "email@email.com", "31325646", DeliveryPersonStatus.BUSY, "yayhs");
         DeliveryProduct deliveryProduct = new DeliveryProduct("product", new BigDecimal("10.0"));
