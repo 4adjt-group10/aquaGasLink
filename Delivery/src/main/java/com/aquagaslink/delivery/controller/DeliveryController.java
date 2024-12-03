@@ -38,7 +38,7 @@ public class DeliveryController {
     }
 
     @GetMapping("/delivery/{deliveryPersonId}")
-    @Operation(summary = "rescue delivery id by delivery person id")
+    @Operation(summary = "Get delivery id by delivery person id")
     public String getDeliveryId(@PathVariable UUID deliveryPersonId) {
         return deliveryService.getDeliveryId(deliveryPersonId);
     }
