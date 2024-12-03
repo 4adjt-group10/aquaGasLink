@@ -25,41 +25,141 @@ services:
       - rabbitmq_go_net
 
   order-db:
-    extends:
-      file: ./OrderManagement/compose.yaml
-      service: order-db
+    container_name: postgres-order
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - ./OrderManagement/data/db/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=order_database
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=myuser
+      - TZ=America/Sao_Paulo
+    ports:
+      - "5432:5432"
+    networks:
+      - order-network
 
   order-app:
-    extends:
-      file: ./OrderManagement/compose.yaml
-      service: order-app
+    container_name: java-order
+    image: maven:3.8.4-openjdk-17
+    volumes:
+      - ./OrderManagement:/app
+    working_dir: /app
+    command: bash -c "mvn clean install && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar target/OrderManagement.jar"
+    environment:
+      - TZ=America/Sao_Paulo
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    networks:
+      - order-network
+      - rabbitmq_go_net
+    depends_on:
+      - order-db
 
   product-db:
-    extends:
-      file: ./Product/compose.yaml
-      service: product-db
+    container_name: postgres-product
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - ./Product/data/db/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=product_database
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=myuser
+      - TZ=America/Sao_Paulo
+    ports:
+      - "5433:5432"
+    networks:
+      - product-network
 
   product-app:
-    extends:
-      file: ./Product/compose.yaml
-      service: product-app
+    container_name: java-product
+    image: maven:3.8.4-openjdk-17
+    volumes:
+      - ./Product:/app
+    working_dir: /app
+    command: bash -c "mvn clean install && cp target/Product.jar /app/Product.jar && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar /app/Product.jar"
+    environment:
+      - TZ=America/Sao_Paulo
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    ports:
+      - "8081:8080"
+      - "5006:5005"
+    networks:
+      - product-network
+      - rabbitmq_go_net
+    depends_on:
+      - product-db
 
   client-db:
-    extends:
-      file: ./Client/compose.yaml
-      service: client-db
+    container_name: postgres-client
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - ./Client/data/db/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=client_database
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=myuser
+      - TZ=America/Sao_Paulo
+    ports:
+      - "5434:5432"
+    networks:
+      - client-network
 
   client-app:
-    extends:
-      file: ./Client/compose.yaml
-      service: client-app
+    container_name: java-client
+    image: maven:3.8.4-openjdk-17
+    volumes:
+      - ./Client:/app
+    working_dir: /app
+    command: bash -c "mvn clean install && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar target/Client.jar"
+    environment:
+      - TZ=America/Sao_Paulo
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    ports:
+      - "8082:8080"
+      - "5007:5005"
+    networks:
+      - client-network
+      - rabbitmq_go_net
+    depends_on:
+      - client-db
 
   delivery-db:
-    extends:
-      file: ./Delivery/compose.yaml
-      service: delivery-db
+    container_name: delivery-postgres
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - ./Delivery/data/db/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=delivery
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=myuser
+      - TZ=America/Sao_Paulo
+    ports:
+      - "5436:5432"
+    networks:
+      - delivery-network
 
   delivery-app:
-    extends:
-      file: ./Delivery/compose.yaml
-      service: delivery-app
+    container_name: java-delivery
+    image: maven:3.8.4-openjdk-17
+    volumes:
+      - ./Delivery:/app
+    working_dir: /app
+    command: bash -c "mvn clean install && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar target/Delivery.jar"
+    environment:
+      - TZ=America/Sao_Paulo
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    ports:
+      - "8086:8080"
+      - "5008:5005"
+    networks:
+      - delivery-network
+      - rabbitmq_go_net
+    depends_on:
+      - delivery-db
