@@ -13,6 +13,7 @@ import java.util.UUID;
 @RequestMapping("/delivery")
 public class DeliveryController {
 
+    private static final String TRACKING_BY_CLIENT_DESCRIPTION = "Get delivery tracking by client id when delivery person is on the way (When the courier starts the delivery, send latitude and longitude to /tracking/{orderId})";
     final DeliveryService deliveryService;
 
     public DeliveryController(DeliveryService deliveryService) {
@@ -32,7 +33,8 @@ public class DeliveryController {
     }
 
     @GetMapping("/track-by-client/{clientId}")
-    @Operation(summary = "Track delivery by client id")
+    @Operation(summary = "Track delivery by client id",
+            description = TRACKING_BY_CLIENT_DESCRIPTION)
     public RoutOutput trackByClient(@PathVariable UUID clientId) {
         return deliveryService.getTrackingByClient(clientId);
     }
