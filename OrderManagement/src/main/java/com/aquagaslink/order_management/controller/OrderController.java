@@ -3,7 +3,6 @@ package com.aquagaslink.order_management.controller;
 import com.aquagaslink.order_management.controller.dto.OrderDto;
 import com.aquagaslink.order_management.controller.dto.OrderFormDto;
 import com.aquagaslink.order_management.model.OrderStatus;
-import com.aquagaslink.order_management.queue.OrderEventGateway;
 import com.aquagaslink.order_management.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -28,11 +27,9 @@ public class OrderController {
          to fetch the third page (page count starts at 0), with 5 records per page, sorted by createdAt in descending order.
     """;
 
-    private final OrderEventGateway orderEventGateway;
     private final OrderService orderService;
 
-    public OrderController(OrderEventGateway orderEventGateway, OrderService orderService) {
-        this.orderEventGateway = orderEventGateway;
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
 
