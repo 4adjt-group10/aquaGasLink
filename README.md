@@ -40,7 +40,7 @@ Utilizando uma arquitetura de microsserviços, o AquaGasLink é composto por qua
 # Como Executar
 1. Certifique-se de ter o Java, Maven e Docker instalados em sua máquina.
 2. Navegue até o diretório raiz do projeto.
-3. Execute o comando `docker-base-compose up` para iniciar os contêineres dos microserviços, bancos de dados e messageria.
+3. Execute o comando `docker-compose -f base-compose.yaml up` para iniciar os contêineres dos microserviços, bancos de dados e messageria.
 4. Os serviços estarão disponíveis em:
    - Client: `http://localhost:8082/swagger-ui/index.html`.
    - Product: `http://localhost:8081/swagger-ui/index.html`.
