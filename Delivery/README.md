@@ -42,6 +42,8 @@ Além disso, atribui entregadores a entregas específicas.
 3. Suba a rede `rabbitmq_go_net` e o serviço `rabbitmq`, presente no arquivo `base-compose.yml`. Ele é necessário para o correto funcionamento do serviço.
 4. Execute o comando `docker-compose up` para iniciar os contêineres do microserviço e suas dependências.
 5. Para visualizar a documentação da API, acesse: `http://localhost:8086/swagger-ui/index.html`.
+> [!TIP]
+> Para auxiliar na obtenção de latitude e longitude, utilize [Coordenadas-gps](https://www.coordenadas-gps.net/) ou o [Google Maps](https://www.google.com/maps).
 
 # Endpoints
 - **POST `/delivery/tracking/{orderId}`**: Rastreia a entrega por ID do pedido.
