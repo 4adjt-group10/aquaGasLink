@@ -11,7 +11,7 @@ O serviço de delivery também gerencia os entregadores, permitindo a criação,
 Além disso, atribui entregadores a entregas específicas.
 
 # Funcionalidades
-- **Rastreamento de Entregas**: Permite rastrear entregas por ID do pedido ou ID do cliente.
+- **Rastreamento de Entregas**: Permite rastrear entregas por ID do pedido ou ID do cliente, juntamente com latitude e longitude, ou endereço completo (integração com [Google Directions API](https://developers.google.com/maps/documentation/directions/get-directions))
 - **Finalização de Entregas**: Permite atualizar o status de uma entrega e envia um evento de pedido para o serviço `order`, para que seja finalizado.
 - **Gerenciamento de Entregadores**: Permite a criação, atualização, exclusão e consulta de informações dos entregadores.
 - **Atribuição de Entregadores**: Atribui automaticamente entregadores disponíveis à entregas em estado de espera.
