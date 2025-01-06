@@ -47,7 +47,7 @@ public class DeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryPersonService deliveryPersonService;
     private final DeliveryEventGateway deliveryEventGateway;
-    private String apiKey = "AIzaSyAwyKbMBsFNJQFBDFAnhqy1Biu7qrfObP8"; // Substitua pela sua chave de API
+    private String apiKey = "SUA-KEY"; // Substitua pela sua chave de API
 
     public DeliveryService(DeliveryRepository deliveryRepository, DeliveryPersonService deliveryPersonService, DeliveryEventGateway deliveryEventGateway) {
         this.deliveryRepository = deliveryRepository;
